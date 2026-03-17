@@ -16,7 +16,7 @@ export default function HomePage() {
       <section className="hero-grid">
         <h1 id="hero-title" className="hero-title">
           <span className="headline-top">You can build anything with AI.</span>
-          <span className="headline-accent">So what proves you can?</span>
+          <span className="headline-accent">So how do you prove it?</span>
         </h1>
         <p className="lede">
           AI has collapsed the cost of building. One developer can ship systems that used to take teams.
@@ -46,7 +46,7 @@ export default function HomePage() {
         </p>
         <section className="how-it-works" id="get-started">
           <p className="workflow-copy" role="text" aria-label="How it works">
-            Skillcraft works with the AI coding agents you already use. As you build, it turns your commits into verifiable evidence, forming a picture of how you operate. When you have enough evidence, you can use it to claim credentials that reflect demonstrated capability.
+            Use your favourite AI coding agents and let Skillcraft turn your commits into verifiable evidence. When you have enough, use it to claim credentials and build a profile that reflects demonstrated capability.
           </p>
 
           <section className="terminal">
