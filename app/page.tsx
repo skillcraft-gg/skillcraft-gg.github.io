@@ -4,7 +4,7 @@ import Link from 'next/link'
 import AppShell from '../components/AppShell'
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: 'Skillcraft',
 }
 
 export default function HomePage() {

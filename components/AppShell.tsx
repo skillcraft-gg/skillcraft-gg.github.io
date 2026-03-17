@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import AnimatedCharacter from './AnimatedCharacter'
 import TopNav from './TopNav'
 
 type AppShellProps = {
@@ -32,9 +33,9 @@ export default function AppShell({
         <img src="/images/swirls.png" alt="" aria-hidden="true" />
       </div>
 
-      <div className="char">
-        <img src="/images/charm.png" alt="" aria-hidden="true" />
-      </div>
+       <div className="char">
+         <AnimatedCharacter />
+       </div>
 
       <div className="left-fade"></div>
       <div className="bottom-fade"></div>
