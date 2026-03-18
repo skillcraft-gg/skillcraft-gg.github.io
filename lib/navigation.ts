@@ -8,4 +8,4 @@ export const ROUTES = [
 
 export const LOGO_URL = '/images/logo.png'
 
-export const SITE_DESCRIPTION = 'Skillcraft is an open system for verifying and recognizing real-world use of AI agent skills in software development.'
+export const SITE_DESCRIPTION = 'Skillcraft captures how you work and turns it into credentials that prove what you can actually do.'
