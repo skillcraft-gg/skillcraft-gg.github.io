@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
+
+import FadeInImage from './FadeInImage'
 
 const CHARACTERS = ['/images/charm.png', '/images/charf.png']
 
@@ -22,14 +24,20 @@ function nextSwapDelayMs(): number {
 }
 
 export default function AnimatedCharacter() {
-  const [activeIndex, setActiveIndex] = useState<number>(getRandomIndex)
+  const [activeIndex, setActiveIndex] = useState(0)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (CHARACTERS.length <= 1) {
       return undefined
     }
 
     let swapTimer: ReturnType<typeof globalThis.setTimeout> | null = null
+
+    const startWithRandomCharacter = () => {
+      setActiveIndex(getRandomIndex())
+    }
+
+    startWithRandomCharacter()
 
     const scheduleSwap = () => {
       swapTimer = setTimeout(() => {
@@ -38,7 +46,7 @@ export default function AnimatedCharacter() {
       }, nextSwapDelayMs())
     }
 
-    swapTimer = setTimeout(scheduleSwap, nextSwapDelayMs())
+    scheduleSwap()
 
     return () => {
       if (swapTimer !== null) {
@@ -50,11 +58,15 @@ export default function AnimatedCharacter() {
   return (
     <>
       {CHARACTERS.map((src, index) => (
-        <img
+        <FadeInImage
           key={src}
           src={src}
           alt=""
           aria-hidden="true"
+          loading="eager"
+          width={1700}
+          height={1700}
+          fadeOnLoad={false}
           className={`char-layer char-layer--${index}${index === activeIndex ? ' is-visible' : ''}`}
         />
       ))}

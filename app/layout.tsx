@@ -1,9 +1,22 @@
 import type { Metadata } from 'next'
 import type { Viewport } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
 import { SITE_DESCRIPTION } from '../lib/navigation'
 import type { ReactNode } from 'react'
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetBrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://skillcraft.gg'),
@@ -49,17 +62,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${jetBrains.variable}`}>
       <head>
         <link rel="icon" href="/images/skillcraft-icon-zoom.png" />
         <link rel="shortcut icon" href="/images/skillcraft-icon-zoom.png" />
         <link rel="apple-touch-icon" href="/images/skillcraft-icon-zoom.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body>{children}</body>
     </html>

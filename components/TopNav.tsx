@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { LOGO_URL, ROUTES } from '../lib/navigation'
+import FadeInImage from './FadeInImage'
 
 type TopNavProps = {
   activePath?: string
@@ -9,9 +10,9 @@ type TopNavProps = {
 export default function TopNav({ activePath = '/' }: TopNavProps) {
   return (
     <header className="top-bar">
-      <Link href="/" className="brand" aria-label="Skillcraft home">
-        <img src={LOGO_URL} alt="Skillcraft" />
-      </Link>
+       <Link href="/" className="brand" aria-label="Skillcraft home">
+         <FadeInImage src={LOGO_URL} alt="Skillcraft" width={200} height={40} loading="eager" />
+       </Link>
       <nav className="top-nav" aria-label="Primary">
         {ROUTES.map((route) => {
           if (route.disabled) {

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
 
 import AnimatedCharacter from './AnimatedCharacter'
+import CursorBias from './CursorBias'
+import FadeInImage from './FadeInImage'
 import TopNav from './TopNav'
 
 type AppShellProps = {
@@ -24,40 +26,46 @@ export default function AppShell({
   const hasInspector = typeof inspector !== 'undefined' && inspector !== null
 
   return (
-    <section className="hero" aria-label={title}>
-      <div className="bg">
-        <img src="/images/bg.png" alt="" aria-hidden="true" />
-      </div>
-
-      <div className="swirls">
-        <img src="/images/swirls.png" alt="" aria-hidden="true" />
-      </div>
-
-       <div className="char">
-         <AnimatedCharacter />
-       </div>
-
-      <div className="left-fade"></div>
-      <div className="bottom-fade"></div>
-      <div className="noise"></div>
-      <div className="vignette"></div>
-
-      <div className="shell">
-        <TopNav activePath={activePath} />
-
-         <div className={`content${!hasSidebar && !hasInspector ? ' content--single' : ''}`}>
-           <div className={`copy${copyClassName ? ` ${copyClassName}` : ''}`}>
-             {children}
-           </div>
-
-           {hasSidebar || hasInspector ? (
-             <aside className="right-spacer" aria-label="Context panels">
-               {sidebar ? <section className="panel panel--sidebar side-panel">{sidebar}</section> : null}
-               {inspector ? <section className="panel panel--inspector side-panel">{inspector}</section> : null}
-             </aside>
-           ) : null}
+    <CursorBias>
+      <section className="hero" aria-label={title}>
+        <div className="bg">
+          <FadeInImage src="/images/bg.png" alt="" aria-hidden="true" loading="eager" width={2400} height={1600} />
         </div>
-      </div>
-    </section>
+
+        <div className="swirls">
+          <div className="swirls-parallax">
+            <FadeInImage src="/images/swirls.png" alt="" aria-hidden="true" loading="eager" width={2400} height={1600} />
+          </div>
+        </div>
+
+        <div className="char">
+          <div className="char-parallax">
+            <AnimatedCharacter />
+          </div>
+        </div>
+
+        <div className="left-fade"></div>
+        <div className="bottom-fade"></div>
+        <div className="noise"></div>
+        <div className="vignette"></div>
+
+        <div className="shell">
+          <TopNav activePath={activePath} />
+
+          <div className={`content${!hasSidebar && !hasInspector ? ' content--single' : ''}`}>
+            <div className={`copy${copyClassName ? ` ${copyClassName}` : ''} font-fade`}>
+              {children}
+            </div>
+
+            {hasSidebar || hasInspector ? (
+              <aside className="right-spacer" aria-label="Context panels">
+                {sidebar ? <section className="panel panel--sidebar side-panel">{sidebar}</section> : null}
+                {inspector ? <section className="panel panel--inspector side-panel">{inspector}</section> : null}
+              </aside>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    </CursorBias>
   )
 }
