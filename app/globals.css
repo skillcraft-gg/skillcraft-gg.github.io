@@ -800,7 +800,7 @@ h4 {
 
   .whitepaper-feature .whitepaper-promo {
     width: 100%;
-    grid-template-columns: minmax(220px, 1fr) auto;
+    grid-template-columns: minmax(240px, 1fr) 150px;
     align-items: stretch;
   }
 
@@ -809,8 +809,7 @@ h4 {
   }
 
   .whitepaper-promo .whitepaper-simple-link {
-    width: auto;
-    max-width: none;
+    width: 150px;
     min-width: 0;
     margin-top: 0;
     align-self: stretch;
