@@ -635,6 +635,10 @@ h4 {
     0 8px 28px rgba(0,0,0,0.22);
 }
 
+.tagline + .workflow-copy {
+  margin-top: 12px;
+}
+
 .terminal {
   position: relative;
   width: var(--cli-section-width);
@@ -783,7 +787,7 @@ h4 {
 }
 
 .how-it-works + .tagline {
-  margin-top: 18px;
+  margin-top: 38px;
 }
 
 /* Whitepaper promo breakpoints */
@@ -912,7 +916,7 @@ h4 {
 
 @media (min-width: 769px) and (max-width: 980px) {
   .how-it-works + .tagline {
-    margin-top: 14px;
+    margin-top: 34px;
   }
 
   .section.whitepaper-promo > * + * {
@@ -986,6 +990,10 @@ h4 {
     padding-bottom: 18px;
   }
 
+  .how-it-works {
+    width: 100%;
+  }
+
   .whitepaper-promo {
     width: 100%;
     grid-template-columns: 1fr;
@@ -1022,10 +1030,30 @@ h4 {
   .whitepaper-promo .whitepaper-simple-link {
     justify-self: stretch;
     align-self: auto;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    background: rgba(11, 12, 22, 0.45);
+    padding: 8px;
+    display: grid;
+    place-items: center;
+  }
+
+  .whitepaper-promo .whitepaper-image {
+    width: min(100%, 170px);
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: center;
+    border: 0;
+    box-shadow: none;
   }
 }
 
 @media (max-width: 640px) {
+  .whitepaper-promo .whitepaper-image {
+    width: min(100%, 145px);
+  }
+
   .whitepaper-image {
     max-height: 100%;
   }

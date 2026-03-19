@@ -64,25 +64,25 @@ export default function HomePage() {
                   <span className="cmd">skillcraft</span> <span className="arg">enable</span>
                 </span>
               </div>
-              <div className="line">
-                <span className="prompt">$</span>
-                <span>
-                  <span className="arg">git commit -m</span> <span className="str">&quot;implement auth&quot;</span>
-                </span>
-              </div>
+                <div className="line">
+                  <span className="prompt">$</span>
+                  <span>
+                   <span className="arg">git commit -m</span> <span className="str">&quot;using my first agent skill&quot;</span>
+                  </span>
+                </div>
               <div className="line">
                 <span className="prompt">$</span>
                 <span>
                   <span className="cmd">skillcraft</span> <span className="arg">progress</span>
                 </span>
               </div>
-              <div className="line">
-                <span className="prompt">$</span>
-                <span>
-                  <span className="cmd">skillcraft</span> <span className="arg">claim</span> <span className="path">skillcraft-gg/practitioner-threat-model-l1</span>
-                  <span className="cursor" aria-hidden="true" />
-                </span>
-              </div>
+                <div className="line">
+                  <span className="prompt">$</span>
+                  <span>
+                   <span className="cmd">skillcraft</span> <span className="arg">claim</span> <span className="path">skillcraft-gg/hello-world</span>
+                    <span className="cursor" aria-hidden="true" />
+                  </span>
+                </div>
             </div>
           </section>
         </section>
@@ -90,6 +90,9 @@ export default function HomePage() {
         <h2 className="tagline">
           From AI output to verifiable capability.
         </h2>
+        <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
+          Output is easy. Reliable proof is not. Skillcraft binds AI work to verifiable git artifacts and issues credentials only after deterministic verification. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
+        </p>
         <section className="whitepaper-feature">
           <section className="section whitepaper-promo">
             <div className="whitepaper-copy-column">
