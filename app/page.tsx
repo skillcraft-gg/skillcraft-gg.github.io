@@ -91,15 +91,14 @@ export default function HomePage() {
           From AI output to verifiable capability.
         </h2>
         <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
-          Output is easy. Reliable proof is not. Skillcraft binds AI work to verifiable git artifacts and issues credentials only after deterministic verification. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
+          Output is easy. Reliable proof is not. The Skillcraft ecosystem binds AI work to verifiable git artifacts and issues credentials only after deterministic verification.
         </p>
         <section className="whitepaper-feature">
           <section className="section whitepaper-promo">
             <div className="whitepaper-copy-column">
               <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
               <p className="whitepaper-copy">
-                Skillcraft turns everyday commit history into auditable proof. Learn how we capture evidence,
-                evaluate claims with public policy, and publish results as inspectable credentials.
+                Skillcraft turns everyday commit history into auditable proof. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
               </p>
               <div className="cta-row">
                 <a
