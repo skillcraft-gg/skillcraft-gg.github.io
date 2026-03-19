@@ -16,6 +16,8 @@
   --content-side-pad: 72px;
   --content-scale: 0.975;
   --hero-edge-strip-width: 3em;
+  --cli-section-width: min(860px, 92%);
+  --whitepaper-section-width: min(720px, 92%);
 
   --bg-scale-idle: 1;
   --bg-scale-float: 1.006;
@@ -483,8 +485,8 @@ h4 {
 }
 
 .how-it-works {
-  margin-top: 20px;
-  width: min(850px, 92%);
+  margin-top: 0;
+  width: var(--cli-section-width);
   scroll-margin-top: 20px;
 }
 
@@ -635,7 +637,7 @@ h4 {
 
 .terminal {
   position: relative;
-  width: min(850px, 92%);
+  width: var(--cli-section-width);
   margin-top: 24px;
   padding: 20px 22px 20px;
   border-radius: 22px;
@@ -764,6 +766,282 @@ h4 {
   border: 1px solid rgba(255,255,255,0.10);
   background: linear-gradient(180deg, rgba(17, 18, 30, 0.56) 0%, rgba(12, 13, 22, 0.74) 100%);
   backdrop-filter: blur(14px) saturate(135%);
+}
+
+.whitepaper-promo {
+  margin-top: 0;
+  display: inline-grid;
+  width: fit-content;
+  max-width: 100%;
+  grid-template-columns: minmax(0, 220px) 150px;
+  align-items: end;
+  gap: 10px;
+}
+
+.whitepaper-feature {
+  margin-top: 18px;
+}
+
+.how-it-works + .tagline {
+  margin-top: 18px;
+}
+
+@media (min-width: 981px) {
+  .section.whitepaper-promo {
+    width: min(100%, var(--whitepaper-section-width));
+    padding-top: 20px;
+    padding-bottom: 18px;
+  }
+
+  .whitepaper-promo {
+    width: 100%;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: stretch;
+  }
+
+  .whitepaper-copy-column {
+    align-self: stretch;
+  }
+
+  .whitepaper-promo .whitepaper-simple-link {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    margin-top: 0;
+    align-self: stretch;
+    height: 100%;
+    aspect-ratio: 1275 / 1650;
+    display: block;
+    overflow: hidden;
+    position: relative;
+    justify-self: end;
+    grid-column: 2;
+  }
+
+  .whitepaper-promo .whitepaper-image {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 16px;
+    display: block;
+  }
+
+  .whitepaper-copy-column {
+    grid-column: 1;
+  }
+}
+
+.whitepaper-copy-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: none;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.whitepaper-box-title {
+  margin: 0;
+  color: #faf8f4;
+  font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+
+.whitepaper-copy {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.whitepaper-simple-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 16px;
+  position: relative;
+  isolation: isolate;
+  justify-self: stretch;
+  width: 150px;
+  line-height: 0;
+  margin-top: 0;
+}
+
+.whitepaper-promo .whitepaper-box-title,
+.whitepaper-promo .cta-row {
+  grid-column: 1;
+}
+
+.whitepaper-promo .cta-row {
+  margin-top: 0;
+}
+
+.whitepaper-promo .whitepaper-simple-link {
+  grid-column: 2;
+  justify-self: start;
+  align-self: end;
+}
+
+.whitepaper-simple-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 4px;
+}
+
+.whitepaper-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: 50% 45%;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(20, 22, 40, 0.82), rgba(7, 8, 16, 0.9));
+  box-shadow: 0 18px 38px rgba(2, 7, 14, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 980px) {
+  .how-it-works + .tagline {
+    margin-top: 14px;
+  }
+
+  .section.whitepaper-promo > * + * {
+    margin-top: 0;
+  }
+
+  .section.whitepaper-promo .whitepaper-simple-link {
+    margin-top: 0;
+  }
+
+  .whitepaper-feature {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .section.whitepaper-promo {
+    padding-top: 16px;
+    padding-bottom: 18px;
+  }
+
+  .whitepaper-image {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: 50% 50%;
+  }
+
+  .whitepaper-copy-column {
+    margin-top: 2px;
+  }
+
+  .whitepaper-promo {
+    width: 100%;
+    max-width: 100%;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .whitepaper-promo .whitepaper-simple-link {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    justify-self: stretch;
+    align-self: stretch;
+    grid-column: 2;
+    height: 100%;
+    aspect-ratio: 1275 / 1650;
+    display: block;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .whitepaper-promo .whitepaper-image {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .whitepaper-promo .whitepaper-copy-column {
+    grid-column: 1;
+  }
+
+  .how-it-works {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .section.whitepaper-promo {
+    padding-bottom: 18px;
+  }
+
+  .whitepaper-promo {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .whitepaper-copy-column {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: none;
+    width: 100%;
+    align-self: auto;
+    margin-top: 2px;
+  }
+
+  .whitepaper-promo .cta-row {
+    margin-top: 0;
+  }
+
+  .whitepaper-copy {
+    margin: 0;
+  }
+
+  .whitepaper-copy-column,
+  .whitepaper-promo .whitepaper-simple-link {
+    grid-column: 1;
+    align-self: auto;
+    width: 100%;
+  }
+
+  .whitepaper-promo .whitepaper-simple-link {
+    justify-self: stretch;
+    align-self: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .whitepaper-image {
+    max-height: 100%;
+  }
+}
+
+.whitepaper-simple-link:hover .whitepaper-image {
+  transform: none;
+  box-shadow:
+    0 34px 52px rgba(2, 7, 14, 0.52),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
 .section h2,
@@ -1284,6 +1562,10 @@ input::placeholder {
     width: 100%;
   }
 
+  .whitepaper-promo {
+    grid-template-columns: 1fr;
+  }
+
   .copy h1 {
     font-size: clamp(2.4rem, 10vw, 3.3rem);
   }
@@ -1359,6 +1641,7 @@ input::placeholder {
     padding: 14px;
     border-radius: 16px;
   }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

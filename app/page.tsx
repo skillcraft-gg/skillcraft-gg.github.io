@@ -86,6 +86,40 @@ export default function HomePage() {
             </div>
           </section>
         </section>
+
+        <h2 className="tagline">
+          From AI output to verifiable capability.
+        </h2>
+        <section className="whitepaper-feature">
+          <section className="section whitepaper-promo">
+            <div className="whitepaper-copy-column">
+              <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
+              <p className="whitepaper-copy">
+                Skillcraft turns everyday commit history into auditable proof. Learn how we capture evidence,
+                evaluate claims with public policy, and publish results as inspectable credentials.
+              </p>
+              <div className="cta-row">
+                <a
+                  className="btn btn-secondary"
+                  href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download Whitepaper
+                </a>
+              </div>
+            </div>
+            <a
+              className="whitepaper-simple-link"
+              href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open Skillcraft whitepaper PDF"
+            >
+              <img className="whitepaper-image" src="/images/whitepaper-page-1.png" alt="Skillcraft whitepaper front page" />
+            </a>
+          </section>
+        </section>
       </section>
     </AppShell>
   )
