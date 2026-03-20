@@ -49,7 +49,7 @@ export default function HomePage() {
             Use your favourite AI coding agents and let Skillcraft turn your commits into verifiable evidence. When you have enough, use it to claim credentials and build a profile that reflects demonstrated capability.
           </p>
 
-          <section className="terminal">
+           <section className="terminal">
             <div className="terminal-top">
               <div className="dots">
                 <span />
@@ -80,12 +80,17 @@ export default function HomePage() {
                   <span className="prompt">$</span>
                   <span>
                    <span className="cmd">skillcraft</span> <span className="arg">claim</span> <span className="path">skillcraft-gg/hello-world</span>
-                    <span className="cursor" aria-hidden="true" />
-                  </span>
-                </div>
+                   <span className="cursor" aria-hidden="true" />
+                   </span>
+                 </div>
+             </div>
+           </section>
+            <div className="cta-row">
+              <Link className="btn btn-secondary" href="/docs">
+                View Installation Docs
+              </Link>
             </div>
           </section>
-        </section>
 
         <h2 className="tagline">
           From AI output to verifiable capability.
