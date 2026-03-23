@@ -31,8 +31,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Skillcraft',
-    title: 'Skillcraft',
-    description: SITE_DESCRIPTION,
+    title: 'Skillcraft: Turn your work into verifiable AI credentials',
+    description:
+      'Capture what you build, share your progress, and earn verifiable credentials that prove measurable real-world AI engineering work.',
     url: 'https://skillcraft.gg',
     images: [
       {
@@ -45,8 +46,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Skillcraft',
-    description: SITE_DESCRIPTION,
+    title: 'Skillcraft: Turn your work into verifiable AI credentials',
+    description:
+      'Capture what you build, share your progress, and earn verifiable credentials that prove measurable real-world AI engineering work.',
     images: ['/images/og-home.jpg'],
   },
   icons: {

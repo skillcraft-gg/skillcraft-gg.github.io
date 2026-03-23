@@ -26,6 +26,8 @@ OUTPUT_JPG_NAME = 'og-home.jpg'
 OUTPUT_PNG = PUBLIC_IMAGES_DIR / OUTPUT_PNG_NAME
 OUTPUT_JPG = PUBLIC_IMAGES_DIR / OUTPUT_JPG_NAME
 
+OG_CTA_TEXT = 'Start building your AI credentials at skillcraft.gg'
+
 BG_PATH = PUBLIC_IMAGES_DIR / 'bg.png'
 SWIRLS_PATH = PUBLIC_IMAGES_DIR / 'swirls.png'
 CHAR_PATH = PUBLIC_IMAGES_DIR / 'charf.png'
@@ -175,8 +177,11 @@ FINAL_HTML = '''
       inset: 0;
       z-index: 4;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-top: 210px;
+      gap: 90px;
       pointer-events: none;
     }
 
@@ -194,8 +199,19 @@ FINAL_HTML = '''
       overflow: hidden;
       font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       position: relative;
-      transform: scale(1.25);
+      transform: scale(1.5);
       transform-origin: center;
+    }
+
+    .cta {
+      position: relative;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 40px;
+      letter-spacing: -0.01em;
+      text-align: center;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+      font-weight: 600;
+      white-space: nowrap;
     }
 
     .terminal::before {
@@ -331,7 +347,7 @@ FINAL_HTML = '''
           <div class="line">
             <span class="prompt">$</span>
             <span>
-              <span class="arg">git commit -m</span> <span class="str">\"implement auth\"</span>
+              <span class="arg">git commit -m</span> <span class="str">\"using my first agent skill\"</span>
             </span>
           </div>
           <div class="line">
@@ -343,12 +359,14 @@ FINAL_HTML = '''
           <div class="line">
             <span class="prompt">$</span>
             <span>
-              <span class="cmd">skillcraft</span> <span class="arg">claim</span> <span class="path">skillcraft-gg/practitioner-threat-model-l1</span>
+              <span class="cmd">skillcraft</span> <span class="arg">claim</span> <span class="path">skillcraft-gg/hello-world</span>
               <span class="cursor" aria-hidden="true"></span>
             </span>
           </div>
         </div>
       </section>
+
+      <div class="cta">__CTA__</div>
     </div>
   </div>
 </body>
@@ -363,6 +381,7 @@ def _fill_template(template: str, bg_url: str, swirls_url: str, char_url: str, l
         '__CHAR__': char_url,
         '__LOGO__': logo_url,
         '{width}': str(WIDTH),
+        '__CTA__': OG_CTA_TEXT,
     }
 
     html = template
