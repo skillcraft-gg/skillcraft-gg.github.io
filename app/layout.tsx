@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     url: 'https://skillcraft.gg',
     images: [
       {
-        url: '/images/og-home.png',
+        url: '/images/og-home.jpg',
         width: 1200,
         height: 630,
         alt: 'Skillcraft landing preview',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Skillcraft',
     description: SITE_DESCRIPTION,
-    images: ['/images/og-home.png'],
+    images: ['/images/og-home.jpg'],
   },
   icons: {
     icon: '/images/skillcraft-icon-zoom.png',

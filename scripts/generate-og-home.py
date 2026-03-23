@@ -6,8 +6,8 @@
 # ///
 
 """
-Render the homepage Open Graph image with Playwright and write it to:
-public/images/og-home.png
+Render the homepage Open Graph images with Playwright and write them to:
+public/images/og-home.png and public/images/og-home.jpg
 """
 
 import subprocess
@@ -20,8 +20,11 @@ PUBLIC_IMAGES_DIR = ROOT_DIR / 'public' / 'images'
 
 WIDTH = 1200
 HEIGHT = 630
-OUTPUT_NAME = 'og-home.png'
-OUTPUT_FINAL = PUBLIC_IMAGES_DIR / OUTPUT_NAME
+
+OUTPUT_PNG_NAME = 'og-home.png'
+OUTPUT_JPG_NAME = 'og-home.jpg'
+OUTPUT_PNG = PUBLIC_IMAGES_DIR / OUTPUT_PNG_NAME
+OUTPUT_JPG = PUBLIC_IMAGES_DIR / OUTPUT_JPG_NAME
 
 BG_PATH = PUBLIC_IMAGES_DIR / 'bg.png'
 SWIRLS_PATH = PUBLIC_IMAGES_DIR / 'swirls.png'
@@ -368,14 +371,14 @@ def _fill_template(template: str, bg_url: str, swirls_url: str, char_url: str, l
     return html
 
 
-def _run_screenshot(input_html: Path, output_png: Path) -> None:
+def _run_screenshot(input_html: Path, output_path: Path) -> None:
     target_url = input_html.resolve().as_uri()
     cmd = [
         'npx',
         'playwright',
         'screenshot',
         target_url,
-        str(output_png),
+        str(output_path),
         f'--viewport-size={WIDTH},{HEIGHT}',
         '--timeout=0',
     ]
@@ -384,7 +387,7 @@ def _run_screenshot(input_html: Path, output_png: Path) -> None:
 
 
 def _ensure_dirs() -> None:
-    OUTPUT_FINAL.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_PNG.parent.mkdir(parents=True, exist_ok=True)
 
 
 def generate() -> None:
@@ -403,7 +406,8 @@ def generate() -> None:
         )
 
     try:
-        _run_screenshot(html_path, OUTPUT_FINAL)
+        _run_screenshot(html_path, OUTPUT_PNG)
+        _run_screenshot(html_path, OUTPUT_JPG)
     finally:
         html_path.unlink(missing_ok=True)
 
