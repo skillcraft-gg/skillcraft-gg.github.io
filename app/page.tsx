@@ -4,7 +4,7 @@ import Link from 'next/link'
 import AppShell from '../components/AppShell'
 
 export const metadata: Metadata = {
-  title: 'Skillcraft',
+  title: 'Skillcraft: Turn your work into verifiable AI credentials',
 }
 
 export default function HomePage() {
