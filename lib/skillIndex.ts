@@ -1,4 +1,4 @@
-export const INDEX_URL = process.env.SKILLCRAFT_INDEX_URL || 'https://skillcraft.gg/skills/search/index.json'
+export const INDEX_URL = process.env.SKILLCRAFT_INDEX_URL || 'https://skillcraft.gg/skills-registry/search/index.json'
 
 export type SkillRecord = {
   id: string

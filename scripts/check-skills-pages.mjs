@@ -3,7 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const SKILLCRAFT_INDEX_URL = process.env.SKILLCRAFT_INDEX_URL || 'https://skillcraft.gg/skills/search/index.json'
+const SKILLCRAFT_INDEX_URL = process.env.SKILLCRAFT_INDEX_URL || 'https://skillcraft.gg/skills-registry/search/index.json'
 const BASE_URL = 'https://skillcraft.gg'
 const REQUEST_TIMEOUT_MS = Number(process.env.SKILLCRAFT_SMOKE_TIMEOUT_MS) || 8000
 const CHECK_SOURCE_LINKS = process.env.SKILLCRAFT_CHECK_SOURCE_LINKS !== '0'

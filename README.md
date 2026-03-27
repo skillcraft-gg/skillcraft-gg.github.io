@@ -35,7 +35,7 @@ before refreshing.
 
 ## Useful commands
 
-- `npm run build` — generate the full static site from `https://skillcraft.gg/skills/search/index.json`
+- `npm run build` — generate the full static site from `https://skillcraft.gg/skills-registry/search/index.json`
 - `npm run dev` — start the Next.js dev server
 
 ## Current route map
