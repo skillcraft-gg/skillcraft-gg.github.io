@@ -1214,6 +1214,13 @@ h4 {
     border: 0;
     box-shadow: none;
   }
+
+  .top-nav {
+    position: static;
+    top: auto;
+    right: auto;
+    z-index: auto;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2600,6 +2607,10 @@ input::placeholder {
   }
 
   .top-nav {
+    position: static;
+    top: auto;
+    right: auto;
+    z-index: auto;
     gap: 8px;
     padding: 8px;
   }
