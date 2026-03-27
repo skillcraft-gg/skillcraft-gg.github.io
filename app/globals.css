@@ -1310,24 +1310,76 @@ h4 {
 
 .skills-view-row {
   display: grid;
-  gap: 6px;
+  gap: 2px;
+}
+
+.skills-view-row .label {
+  margin-bottom: 0;
 }
 
 .skills-view-toggle {
-  display: inline-flex;
-  flex-wrap: wrap;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
   gap: 6px;
+  align-items: stretch;
 }
 
 .skills-view-toggle .tag {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
-  min-height: 36px;
-  min-width: 110px;
-  padding-inline: 10px;
+  min-height: 40px;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  padding: 10px 11px;
   white-space: nowrap;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: normal;
+  margin: 0;
+  font: inherit;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(10, 16, 24, 0.82);
+  color: var(--text);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
+}
+
+.skills-view-toggle .tag:hover {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(10, 16, 24, 0.82);
+  color: var(--text);
+}
+
+.skills-view-toggle .tag:focus-visible {
+  border-color: rgba(99, 216, 255, 0.55);
+  box-shadow: 0 0 0 2px rgba(99, 216, 255, 0.14);
+  background: rgba(10, 16, 24, 0.95);
+}
+
+.skills-view-toggle .tag[disabled] {
+  cursor: default;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.skills-view-toggle .tag.tag-row--active {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(99, 216, 255, 0.35);
+  color: #e6f8ff;
+  background: rgba(99, 216, 255, 0.16);
+}
+
+.skills-view-toggle .tag[disabled]:hover,
+.skills-view-toggle .tag[disabled]:focus-visible {
+  border-color: var(--cyan);
+  background: rgba(99, 216, 255, 0.16);
+  color: #e6f8ff;
 }
 
 .skills-view-icon {

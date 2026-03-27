@@ -191,6 +191,7 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
 
   const hasFilter = state.q || state.owner || state.tag
   const isListView = state.view === 'list'
+  const isCardView = state.view === 'cards'
 
   useEffect(() => {
     updateScrollFades()
@@ -288,14 +289,22 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
             </select>
           </label>
 
-          <div className="skills-view-row">
+          <label className="skills-view-row">
             <span className="label">View</span>
             <div className="skills-view-toggle" role="group" aria-label="Skills view mode">
               <button
                 type="button"
-                className={isListView ? 'tag' : 'tag tag-row--active'}
-                onClick={() => applyFilter({ view: 'cards' })}
-                aria-pressed={!isListView}
+                className={isCardView ? 'tag tag-row--active' : 'tag'}
+                onClick={() => {
+                  if (isCardView) {
+                    return
+                  }
+
+                  applyFilter({ view: 'cards' })
+                }}
+                aria-pressed={isCardView}
+                aria-label="Use card view"
+                disabled={isCardView}
               >
                 <span className="skills-view-icon skills-view-icon--cards" aria-hidden="true">
                   <span />
@@ -308,8 +317,16 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
               <button
                 type="button"
                 className={isListView ? 'tag tag-row--active' : 'tag'}
-                onClick={() => applyFilter({ view: 'list' })}
+                onClick={() => {
+                  if (isListView) {
+                    return
+                  }
+
+                  applyFilter({ view: 'list' })
+                }}
                 aria-pressed={isListView}
+                aria-label="Use list view"
+                disabled={isListView}
               >
                 <span className="skills-view-icon skills-view-icon--list" aria-hidden="true">
                   <span />
@@ -319,7 +336,7 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
                 List
               </button>
             </div>
-          </div>
+          </label>
         </div>
 
         {hasFilter ? (
