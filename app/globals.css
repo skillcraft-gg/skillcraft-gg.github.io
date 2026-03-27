@@ -278,9 +278,21 @@ a {
   overflow: hidden;
 }
 
+.hero--skills:has(.copy-skill-detail) {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
 .hero--skills .shell {
   height: 100%;
   overflow: hidden;
+}
+
+.hero--skills:has(.copy-skill-detail) .shell {
+  height: auto;
+  min-height: auto;
+  overflow: visible;
 }
 
 .hero--skills .content--wide {
@@ -289,6 +301,11 @@ a {
   min-height: 0;
   overflow: hidden;
   padding-right: 0;
+}
+
+.hero--skills:has(.copy-skill-detail) .content--wide {
+  min-height: 0;
+  overflow: visible;
 }
 
 .hero--skills .copy-skills-list {
@@ -470,14 +487,15 @@ a {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  overflow: visible;
   padding-top: 0;
 }
 
 .hero--skills .copy-skill-detail .skill-detail {
   display: flex;
   flex-direction: column;
+  overflow: visible;
   flex: 1;
   min-height: 0;
 }
@@ -1414,19 +1432,20 @@ h4 {
 
 .detail-summary-layout {
   display: grid;
-  grid-template-columns: 1fr minmax(320px, 480px);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   gap: 14px;
   align-items: start;
   height: 100%;
   min-height: 0;
   flex: 1;
+  min-width: 0;
 }
 
 .detail-summary {
   white-space: normal;
   margin-top: 12px;
   margin-bottom: 0;
-  overflow-y: auto;
+  overflow-y: visible;
   overflow-x: hidden;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -1436,7 +1455,7 @@ h4 {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 100%;
+  max-height: none;
   overscroll-behavior: contain;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -1571,6 +1590,8 @@ h4 {
   display: grid;
   gap: 10px;
   align-content: start;
+  min-width: 0;
+  width: min(100%, 420px);
 }
 
 .detail-quick-links {
@@ -2432,6 +2453,22 @@ input::placeholder {
   }
 }
 
+@media (max-width: 1180px) {
+  .hero--skills:has(.copy-skill-detail),
+  .hero--skills:has(.copy-skill-detail) .shell,
+  .hero--skills:has(.copy-skill-detail) .content--wide {
+    overflow: hidden;
+  }
+
+  .detail-summary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-action-row {
+    width: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   .hero {
     --hero-edge-strip-width: 1em;
@@ -2449,7 +2486,7 @@ input::placeholder {
     --shell-vertical-padding: 18px;
     padding-top: var(--shell-vertical-padding);
     padding-bottom: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
   .hero--skills .shell--wide {
