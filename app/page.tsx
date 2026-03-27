@@ -3,11 +3,41 @@ import Link from 'next/link'
 
 import AppShell from '../components/AppShell'
 
+const SKILLS_REGISTRY_INDEX_URL = 'https://skillcraft.gg/skills-registry/search/index.json'
+const SKILL_COUNT_FALLBACK = '__'
+
+const getSkillRegistryCount = async () => {
+  try {
+    const response = await fetch(SKILLS_REGISTRY_INDEX_URL, { cache: 'no-store' })
+
+    if (!response.ok) {
+      return SKILL_COUNT_FALLBACK
+    }
+
+    const payload = (await response.json()) as unknown
+    const skills = Array.isArray(payload)
+      ? payload
+      : typeof payload === 'object' && payload !== null && 'skills' in payload
+        ? ((payload as { skills?: unknown }).skills || [])
+        : []
+
+    if (!Array.isArray(skills)) {
+      return SKILL_COUNT_FALLBACK
+    }
+
+    return `${skills.length}`
+  } catch {
+    return SKILL_COUNT_FALLBACK
+  }
+}
+
 export const metadata: Metadata = {
   title: 'Skillcraft: Turn your work into verifiable AI credentials',
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const skillCount = await getSkillRegistryCount()
+
   return (
     <AppShell
       title="Home"
@@ -85,14 +115,60 @@ export default function HomePage() {
                  </div>
              </div>
            </section>
-            <div className="cta-row">
-              <Link className="btn btn-secondary" href="/docs">
-                View Installation Docs
-              </Link>
-            </div>
-          </section>
+             <div className="cta-row">
+               <Link className="btn btn-secondary" href="/docs">
+                 View Installation Docs
+               </Link>
+             </div>
+              <p className="tagline">
+                A skills registry at your fingertips.
+              </p>
+              <p className="workflow-copy" role="text" aria-label="Skills registry workflow">
+                Equip your coding agent with the right skill for the task, in seconds. Search by need, inspect the source, and install it with one command.
+              </p>
+              <section className="terminal">
+                <div className="terminal-top">
+                  <div className="dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="code" role="text" aria-label="skills registry terminal example output">
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      <span className="cmd">skillcraft</span> <span className="arg">skills search design</span>
+                    </span>
+                  </div>
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      <span className="cmd">skillcraft</span> <span className="arg">skills inspect anthropic/frontend-design</span>
+                    </span>
+                  </div>
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      <span className="cmd">skillcraft</span> <span className="arg">skills add anthropic/frontend-design</span>
+                    </span>
+                  </div>
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      opencode <span className="arg">run "build my landing page"</span>
+                    </span>
+                  </div>
+                </div>
+              </section>
+              <div className="cta-row">
+                <Link className="btn btn-secondary" href="/skills">
+                  View {skillCount} Skills
+                </Link>
+              </div>
+            </section>
 
-        <h2 className="tagline">
+          <h2 className="tagline">
           From AI output to verifiable capability.
         </h2>
         <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
