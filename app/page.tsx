@@ -8,7 +8,7 @@ const SKILL_COUNT_FALLBACK = '__'
 
 const getSkillRegistryCount = async () => {
   try {
-    const response = await fetch(SKILLS_REGISTRY_INDEX_URL, { cache: 'no-store' })
+    const response = await fetch(SKILLS_REGISTRY_INDEX_URL)
 
     if (!response.ok) {
       return SKILL_COUNT_FALLBACK
@@ -30,6 +30,9 @@ const getSkillRegistryCount = async () => {
     return SKILL_COUNT_FALLBACK
   }
 }
+
+export const dynamic = 'force-static'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'Skillcraft: Turn your work into verifiable AI credentials',
