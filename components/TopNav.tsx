@@ -30,16 +30,16 @@ export default function TopNav({ activePath = '/' }: TopNavProps) {
 
           return route.external
             ? (
-              <a
-                href={route.href}
-                target="_blank"
-                rel="noreferrer"
-                key={route.label}
-                className="top-tab"
-              >
-                {route.label}
-                <span className="star">★</span>
-              </a>
+                <a
+                  href={route.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  key={route.label}
+                  className="top-tab"
+                >
+                  {route.label}
+                  {route.label === 'GitHub' ? <span className="star">★</span> : null}
+                </a>
             )
             : (
               <Link

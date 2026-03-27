@@ -39,10 +39,13 @@ export default async function HomePage() {
   const skillCount = await getSkillRegistryCount()
 
   return (
-    <AppShell
-      title="Home"
-      activePath="/"
-    >
+      <AppShell
+        title="Home"
+        activePath="/"
+        copyClassName="copy--wide"
+        fullBleed
+        heroClassName="hero--landing"
+      >
       <section className="hero-grid">
         <h1 id="hero-title" className="hero-title">
           <span className="headline-top">You can build anything with AI.</span>
@@ -168,41 +171,43 @@ export default async function HomePage() {
               </div>
             </section>
 
-          <h2 className="tagline">
-          From AI output to verifiable capability.
-        </h2>
-        <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
-          Output is easy. Reliable proof is not. The Skillcraft ecosystem binds AI work to verifiable git artifacts and issues credentials only after deterministic verification.
-        </p>
-        <section className="whitepaper-feature">
-          <section className="section whitepaper-promo">
-            <div className="whitepaper-copy-column">
-              <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
-              <p className="whitepaper-copy">
-                Skillcraft turns everyday commit history into auditable proof. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
-              </p>
-              <div className="cta-row">
+          <section className="whitepaper-block">
+            <h2 className="tagline">
+              From AI output to verifiable capability.
+            </h2>
+            <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
+              Output is easy. Reliable proof is not. The Skillcraft ecosystem binds AI work to verifiable git artifacts and issues credentials only after deterministic verification.
+            </p>
+            <section className="whitepaper-feature">
+              <section className="section whitepaper-promo">
+                <div className="whitepaper-copy-column">
+                  <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
+                  <p className="whitepaper-copy">
+                    Skillcraft turns everyday commit history into auditable proof. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
+                  </p>
+                  <div className="cta-row">
+                    <a
+                      className="btn btn-secondary"
+                      href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Download Whitepaper
+                    </a>
+                  </div>
+                </div>
                 <a
-                  className="btn btn-secondary"
+                  className="whitepaper-simple-link"
                   href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Open Skillcraft whitepaper PDF"
                 >
-                  Download Whitepaper
+                  <img className="whitepaper-image" src="/images/whitepaper-page-1.png" alt="Skillcraft whitepaper front page" />
                 </a>
-              </div>
-            </div>
-            <a
-              className="whitepaper-simple-link"
-              href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Open Skillcraft whitepaper PDF"
-            >
-              <img className="whitepaper-image" src="/images/whitepaper-page-1.png" alt="Skillcraft whitepaper front page" />
-            </a>
+              </section>
+            </section>
           </section>
-        </section>
       </section>
     </AppShell>
   )

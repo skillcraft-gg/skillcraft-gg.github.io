@@ -240,6 +240,7 @@ a {
 .shell {
   position: relative;
   z-index: 2;
+  --shell-right-inset: calc((100% - min(var(--content-max-width), calc(100% - var(--content-side-pad))) ) / 2);
   width: min(var(--content-max-width), calc(100% - var(--content-side-pad)));
   max-width: var(--content-max-width);
   margin: 0 auto;
@@ -257,6 +258,7 @@ a {
   width: 100%;
   max-width: 100%;
   --wide-shell-side-inset: var(--hero-edge-strip-width);
+  --shell-right-inset: var(--hero-edge-strip-width);
   padding-left: calc(var(--wide-shell-side-inset) * 2);
   padding-right: var(--wide-shell-side-inset);
   transform: none;
@@ -276,6 +278,42 @@ a {
 .hero--skills {
   height: 100vh;
   overflow: hidden;
+}
+
+.hero--landing {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.hero--landing .shell {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.hero--landing .content--wide {
+  overflow: visible;
+}
+
+.hero--landing.hero--skills {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.hero--landing.hero--skills .shell {
+  height: auto;
+  min-height: 100vh;
+  overflow: visible;
+}
+
+.hero--landing.hero--skills .content--wide {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .hero--skills:has(.copy-skill-detail) {
@@ -342,6 +380,13 @@ a {
 
 .is-initial-load-motion .top-bar {
   animation: fadeUp 900ms ease both;
+}
+
+.top-nav {
+  position: fixed;
+  top: var(--shell-vertical-padding);
+  right: var(--shell-right-inset);
+  z-index: 10;
 }
 
 .brand {
@@ -887,6 +932,10 @@ h4 {
   backdrop-filter: blur(14px) saturate(135%);
 }
 
+.whitepaper-block {
+  width: 100%;
+}
+
 .whitepaper-promo {
   margin-top: 0;
   display: inline-grid;
@@ -907,6 +956,10 @@ h4 {
 
 /* Whitepaper promo breakpoints */
 @media (min-width: 981px) {
+  .whitepaper-block {
+    width: min(100%, var(--whitepaper-section-width));
+  }
+
   .section.whitepaper-promo {
     width: min(100%, var(--whitepaper-section-width));
     padding-top: 20px;
@@ -914,7 +967,7 @@ h4 {
   }
 
   .whitepaper-feature .whitepaper-promo {
-    width: 100%;
+    width: min(100%, var(--whitepaper-section-width));
     grid-template-columns: minmax(240px, 1fr) 150px;
     align-items: stretch;
   }
@@ -2214,6 +2267,13 @@ input::placeholder {
 @media (max-width: 980px) {
   .hero {
     --hero-edge-strip-width: 2em;
+  }
+
+  .hero--landing,
+  .hero--landing.hero--skills,
+  .hero--landing .shell,
+  .hero--landing .content--wide {
+    overflow: hidden;
   }
 
   .shell {

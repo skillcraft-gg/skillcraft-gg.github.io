@@ -13,6 +13,7 @@ type AppShellProps = {
   inspector?: ReactNode
   copyClassName?: string
   fullBleed?: boolean
+  heroClassName?: string
 }
 
 export default function AppShell({
@@ -23,13 +24,14 @@ export default function AppShell({
   inspector,
   copyClassName = '',
   fullBleed = false,
+  heroClassName = '',
 }: AppShellProps) {
   const hasSidebar = typeof sidebar !== 'undefined' && sidebar !== null
   const hasInspector = typeof inspector !== 'undefined' && inspector !== null
 
   return (
     <CursorBias>
-      <section className={`hero${fullBleed ? ' hero--skills' : ''}`} aria-label={title}>
+      <section className={`hero${fullBleed ? ' hero--skills' : ''}${heroClassName ? ` ${heroClassName}` : ''}`} aria-label={title}>
         <div className="bg">
           <FadeInImage src="/images/bg.png" alt="" aria-hidden="true" loading="eager" width={2400} height={1600} />
         </div>
