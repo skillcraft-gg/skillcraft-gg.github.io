@@ -317,9 +317,9 @@ a {
 }
 
 .hero--skills:has(.copy-skill-detail) {
-  height: auto;
+  height: 100vh;
   min-height: 100vh;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .hero--skills .shell {
@@ -328,9 +328,9 @@ a {
 }
 
 .hero--skills:has(.copy-skill-detail) .shell {
-  height: auto;
-  min-height: auto;
-  overflow: visible;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .hero--skills .content--wide {
@@ -343,7 +343,15 @@ a {
 
 .hero--skills:has(.copy-skill-detail) .content--wide {
   min-height: 0;
-  overflow: visible;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero--skills:has(.copy-skill-detail) .copy {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .hero--skills .copy-skills-list {
@@ -531,18 +539,19 @@ a {
 .hero--skills .copy-skill-detail {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
-  height: auto;
-  overflow: visible;
+  height: 100%;
+  overflow: hidden;
   padding-top: 0;
 }
 
 .hero--skills .copy-skill-detail .skill-detail {
-  display: flex;
-  flex-direction: column;
-  overflow: visible;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 
 .right-spacer {
@@ -1494,7 +1503,7 @@ h4 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   gap: 14px;
-  align-items: start;
+  align-items: stretch;
   height: 100%;
   min-height: 0;
   flex: 1;
@@ -1505,7 +1514,7 @@ h4 {
   white-space: normal;
   margin-top: 12px;
   margin-bottom: 0;
-  overflow-y: visible;
+  overflow-y: auto;
   overflow-x: hidden;
   padding: 12px;
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -1515,7 +1524,8 @@ h4 {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-height: 0;
-  max-height: none;
+  max-height: 100%;
+  height: 100%;
   overscroll-behavior: contain;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -1537,8 +1547,11 @@ h4 {
 }
 
 .detail-summary-shell {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  min-height: 0;
+  flex: 1 1 auto;
 }
 
 .detail-summary-collapse {
@@ -1617,6 +1630,31 @@ h4 {
   overflow-wrap: anywhere;
 }
 
+.detail-table-shell {
+  margin: 0 0 12px;
+  overflow-x: auto;
+}
+
+.detail-table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(4, 5, 14, 0.5);
+}
+
+.detail-table th,
+.detail-table td {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 10px;
+  vertical-align: top;
+}
+
+.detail-table th {
+  background: rgba(8, 9, 20, 0.7);
+  font-weight: 700;
+}
+
 .detail-summary pre code {
   border: 0;
   background: transparent;
@@ -1672,13 +1710,20 @@ h4 {
 .skill-detail {
   display: grid;
   gap: 14px;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
+}
+
+.section.skill-detail {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .detail-summary-column {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   min-height: 0;
   flex: 1 1 auto;
   min-width: 0;
@@ -2359,11 +2404,26 @@ input::placeholder {
     max-width: 100%;
   }
 
-  .detail-summary-shell,
-  .detail-summary-column {
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
+  .hero--skills:has(.copy-skill-detail),
+  .hero--skills:has(.copy-skill-detail) .shell,
+  .hero--skills:has(.copy-skill-detail) .content--wide,
+  .hero--skills:has(.copy-skill-detail) .copy,
+  .hero--skills .copy-skill-detail,
+  .hero--skills .copy-skill-detail .skill-detail,
+  .hero--skills .detail-summary-column,
+  .hero--skills .detail-summary-shell {
+    overflow: visible;
+    height: auto;
+  }
+
+  .hero--skills .copy-skill-detail,
+  .hero--skills .copy-skill-detail .skill-detail {
+    max-height: none;
+  }
+
+  .detail-summary-toggle {
+    justify-self: start;
+    display: inline-flex;
   }
 
   .detail-summary-collapse {
@@ -2390,6 +2450,13 @@ input::placeholder {
     overflow: visible;
     mask-image: none;
     -webkit-mask-image: none;
+  }
+
+  .detail-summary-shell,
+  .detail-summary-column {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
   }
 
   .detail-summary p,
@@ -2481,11 +2548,6 @@ input::placeholder {
     font-size: 0.84rem !important;
   }
 
-  .detail-summary-toggle {
-    justify-self: start;
-    display: inline-flex;
-  }
-
   .left-fade {
     background: linear-gradient(180deg, rgba(6, 5, 11, 0.42) 0%, rgba(6, 5, 11, 0.18) 26%, rgba(6, 5, 11, 0.42) 100%);
   }
@@ -2520,17 +2582,25 @@ input::placeholder {
   }
 }
 
-@media (max-width: 1180px) {
-  .hero--skills:has(.copy-skill-detail),
-  .hero--skills:has(.copy-skill-detail) .shell,
-  .hero--skills:has(.copy-skill-detail) .content--wide {
-    overflow: hidden;
-  }
-
+@media (min-width: 981px) {
   .detail-summary-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
   }
 
+  .detail-summary-toggle {
+    display: none;
+  }
+
+  .detail-summary-collapse {
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+@media (max-width: 1180px) {
   .detail-action-row {
     width: 100%;
   }

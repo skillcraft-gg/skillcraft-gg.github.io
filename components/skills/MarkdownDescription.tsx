@@ -15,43 +15,104 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
+const decodeHtmlEntities = (value: string): string => {
+  return value
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&grave;/g, '`')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&#(\d+);/g, (_, value) => {
+      const codePoint = Number(value)
+      return Number.isNaN(codePoint) ? _.toString() : String.fromCodePoint(codePoint)
+    })
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, value) => {
+      const codePoint = Number.parseInt(value, 16)
+      return Number.isNaN(codePoint) ? _.toString() : String.fromCodePoint(codePoint)
+    })
+}
+
 const parseInline = (value: string): ReactNode[] => {
-  const escaped = escapeHtml(value)
+  const normalizedValue = decodeHtmlEntities(value)
+  const escaped = escapeHtml(normalizedValue)
   const tokens = escaped.split(/(`[^`]+`|\[[^\]]+\]\([^\)]+\)|\*\*[^\*\n]+\*\*|\*[^\*\n]+\*|__[^_\n]+__|_[^_\n]+_)/g)
 
   return tokens
     .filter((token) => token !== '')
     .map((token, index) => {
+      const decoded = decodeHtmlEntities(token)
+
       if (/^`[^`]+`$/.test(token)) {
-        return <code key={index}>{token.slice(1, -1)}</code>
+        return <code key={index}>{decodeHtmlEntities(token.slice(1, -1))}</code>
       }
 
       const link = /^\[([^\]]+)\]\(([^\s)]+)(?:\s+"[^"]+")?\)$/.exec(token)
       if (link) {
         return (
-          <a key={index} href={link[2]} target="_blank" rel="noreferrer">
-            {link[1]}
+          <a key={index} href={decodeHtmlEntities(link[2])} target="_blank" rel="noreferrer">
+            {decodeHtmlEntities(link[1])}
           </a>
         )
       }
 
       if (/^\*\*[^\*\n]+\*\*$/.test(token)) {
-        return <strong key={index}>{token.slice(2, -2)}</strong>
+        return <strong key={index}>{decoded.slice(2, -2)}</strong>
       }
 
       if (/^__[^_\n]+__$/.test(token)) {
-        return <strong key={index}>{token.slice(2, -2)}</strong>
+        return <strong key={index}>{decoded.slice(2, -2)}</strong>
       }
 
       if (/^\*[^\*\n]+\*$/.test(token)) {
-        return <em key={index}>{token.slice(1, -1)}</em>
+        return <em key={index}>{decoded.slice(1, -1)}</em>
       }
 
       if (/^_[^_\n]+_$/.test(token)) {
-        return <em key={index}>{token.slice(1, -1)}</em>
+        return <em key={index}>{decoded.slice(1, -1)}</em>
       }
 
-      return token
+      return decoded
+    })
+}
+
+const parseTableCells = (line: string): string[] => line
+  .trim()
+  .replace(/^\|/, '')
+  .replace(/\|$/, '')
+  .split('|')
+  .map((cell) => cell.trim())
+
+const isTableSeparator = (line: string): boolean => {
+  return /^(\s*\|?\s*:?-{3,}:?(\s*\|\s*:?-{3,}:?\s*)+\|?\s*)$/.test(line)
+}
+
+const isTableRow = (line: string): boolean => {
+  const trimmed = line.trim()
+
+  return /^\|?[^|\n]+(?:\|[^|\n]+)+\|?$/.test(trimmed)
+}
+
+const parseTableAlignments = (line: string): Array<'left' | 'center' | 'right'> => {
+  const cells = parseTableCells(line)
+
+  return cells
+    .map((cell) => {
+      const trimmed = cell.trim()
+      const hasLeft = trimmed.startsWith(':')
+      const hasRight = trimmed.endsWith(':')
+
+      if (hasLeft && hasRight) {
+        return 'center'
+      }
+
+      if (hasRight) {
+        return 'right'
+      }
+
+      return 'left'
     })
 }
 
@@ -132,7 +193,9 @@ const buildMarkdownBlocks = (content: string): ReactNode[] => {
     flushCode()
   }
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index]
+
     if (/^```/.test(line)) {
       if (inCodeBlock) {
         flushCode()
@@ -148,6 +211,53 @@ const buildMarkdownBlocks = (content: string): ReactNode[] => {
 
     if (inCodeBlock) {
       codeLines.push(line)
+      continue
+    }
+
+    const nextLine = lines[index + 1] || ''
+    if (isTableRow(line) && isTableSeparator(nextLine)) {
+      flushAll()
+
+      const headerColumns = parseTableCells(line)
+      const columnAlignments = parseTableAlignments(nextLine)
+      const rows: ReactNode[] = []
+      index += 2
+
+      while (index < lines.length && isTableRow(lines[index])) {
+        const rowCells = parseTableCells(lines[index])
+
+        rows.push(
+          <tr key={`table-row-${keySeed++}`}>
+            {rowCells.map((cell, cellIndex) => (
+              <td key={`${keySeed}-${cellIndex}`} style={{ textAlign: columnAlignments[cellIndex] || 'left' }}>
+                {parseInline(cell)}
+              </td>
+            ))}
+          </tr>,
+        )
+
+        index += 1
+      }
+
+      index -= 1
+
+      blocks.push(
+        <div key={`table-${keySeed++}`} className="detail-table-shell">
+          <table className="detail-table">
+            <thead>
+              <tr>
+                {headerColumns.map((header, headerIndex) => (
+                  <th key={`table-head-${keySeed}-${headerIndex}`} style={{ textAlign: columnAlignments[headerIndex] || 'left' }}>
+                    {parseInline(header)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+          </table>
+        </div>,
+      )
+
       continue
     }
 
