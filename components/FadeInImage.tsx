@@ -29,7 +29,7 @@ export default function FadeInImage({
     <img
       ref={imgRef}
       {...props}
-      className={`fade-media${fadeOnLoad && isLoaded ? ' is-loaded' : ''}${className ? ` ${className}` : ''}`}
+      className={`${fadeOnLoad ? 'fade-media' : ''}${fadeOnLoad && isLoaded ? ' is-loaded' : ''}${className ? ` ${className}` : ''}`}
       onLoad={(event) => {
         setIsLoaded(true)
         if (onLoad) {

@@ -10,9 +10,9 @@ type TopNavProps = {
 export default function TopNav({ activePath = '/' }: TopNavProps) {
   return (
     <header className="top-bar">
-       <Link href="/" className="brand" aria-label="Skillcraft home">
-         <FadeInImage src={LOGO_URL} alt="Skillcraft" width={200} height={40} loading="eager" />
-       </Link>
+        <Link href="/" className="brand" aria-label="Skillcraft home">
+          <FadeInImage src={LOGO_URL} alt="Skillcraft" width={200} height={40} loading="eager" fadeOnLoad={false} />
+        </Link>
       <nav className="top-nav" aria-label="Primary">
         {ROUTES.map((route) => {
           if (route.disabled) {
