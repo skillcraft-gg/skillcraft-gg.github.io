@@ -7,26 +7,33 @@ export type SkillRecord = {
   slug: string
   url: string
   path: string
-  runtimes: string[]
-  runtimeText: string
   tags: string[]
   updatedAt: string
   description: string
+  indexMetadata: Record<string, unknown>
 }
 
-type RawSkillPayload = {
-  owner?: unknown
-  slug?: unknown
-  name?: unknown
-  runtime?: unknown
-  runtimes?: unknown
-  tags?: unknown
-  tagsText?: unknown
-  updatedAt?: unknown
-  description?: unknown
-  url?: unknown
-  path?: unknown
+type RawSkillPayload = Record<string, unknown>
+
+type ParsedSkillIndexPayload = {
+  skills?: unknown
 }
+
+const IGNORED_METADATA_KEYS = new Set([
+  'id',
+  'name',
+  'owner',
+  'slug',
+  'runtime',
+  'runtimes',
+  'runtimeText',
+  'tags',
+  'tagsText',
+  'updatedAt',
+  'description',
+  'url',
+  'path',
+])
 
 const normalize = (value: unknown): string => {
   if (!value) {
@@ -44,8 +51,116 @@ const normalize = (value: unknown): string => {
   return String(value).trim()
 }
 
+const normalizeList = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item).trim())
+      .filter(Boolean)
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+
+  return []
+}
+
 const uniqueSorted = (items: string[]) =>
-  [...new Set(items.filter(Boolean).map((item) => String(item).trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b))
+  [...new Set(items.map((item) => item.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b))
+
+const ensureOwner = (value: unknown): string => {
+  const owner = normalize(value).toLowerCase()
+  return owner || 'unknown'
+}
+
+const ensureSlug = (value: unknown, fallback: unknown): string => {
+  const normalized = normalize(value).toLowerCase().replace(/\s+/g, '-')
+  const fallbackValue = fallback ? normalize(fallback).toLowerCase().replace(/\s+/g, '-') : ''
+
+  return normalized || fallbackValue || safeId(fallback)
+}
+
+const parseTagList = (value: unknown, tagsText: unknown): string[] => {
+  return uniqueSorted([...normalizeList(value), ...normalizeList(tagsText)])
+}
+
+const buildIndexMetadata = (entry: RawSkillPayload): Record<string, unknown> => {
+  const output: Record<string, unknown> = {}
+
+  for (const [key, value] of Object.entries(entry)) {
+    if (!IGNORED_METADATA_KEYS.has(key)) {
+      output[key] = value
+    }
+  }
+
+  return output
+}
+
+const parseSkillEntry = (entry: unknown): SkillRecord | null => {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return null
+  }
+
+  const skill = entry as RawSkillPayload
+  const owner = ensureOwner(skill.owner)
+  const slug = ensureSlug(skill.slug, skill.name)
+
+  if (!owner || !slug) {
+    return null
+  }
+
+  const tags = parseTagList(skill.tags, skill.tagsText)
+  const rawMetadata = buildIndexMetadata(skill)
+
+  return {
+    id: normalize(skill.id || `${owner}:${slug}`).toLowerCase() || `${owner}:${slug}`,
+    name: normalize(skill.name || slug || 'Untitled') || 'Untitled',
+    owner,
+    slug,
+    url: normalize(skill.url || ''),
+    path: normalize(skill.path || `skills/${slug}`),
+    tags,
+    updatedAt: normalize(skill.updatedAt || ''),
+    description: normalize(skill.description || '') || 'No description provided.',
+    indexMetadata: rawMetadata,
+  }
+}
+
+export const parseSkillIndexPayload = (payload: unknown): SkillRecord[] => {
+  const entries = Array.isArray(payload)
+    ? (payload as unknown[])
+    : (
+        isObjectRecord(payload) && 'skills' in (payload as ParsedSkillIndexPayload)
+          ? ((payload as ParsedSkillIndexPayload).skills as unknown)
+          : null
+      )
+
+  if (!Array.isArray(entries)) {
+    return []
+  }
+
+  return entries
+    .map(parseSkillEntry)
+    .filter((skill): skill is SkillRecord => Boolean(skill))
+}
+
+const isObjectRecord = (value: unknown): value is ParsedSkillIndexPayload => {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+const fetchIndexPayload = async (cache: RequestCache = 'default'): Promise<SkillRecord[]> => {
+  const response = await fetch(INDEX_URL, { cache })
+
+  if (!response.ok) {
+    throw new Error(`Failed to load skill index (${response.status})`)
+  }
+
+  const payload = (await response.json()) as unknown
+  return parseSkillIndexPayload(payload)
+}
 
 const safeId = (value: unknown) =>
   String(value || '')
@@ -61,66 +176,18 @@ export const fetchSkillIndex = async (): Promise<SkillRecord[]> => {
     return cachedSkills
   }
 
-  const response = await fetch(INDEX_URL)
-
-  if (!response.ok) {
-    throw new Error(`Failed to load skill index (${response.status})`)
-  }
-
-  const payload = (await response.json()) as unknown
-  const entries = Array.isArray(payload)
-    ? (payload as unknown[])
-    : (typeof payload === 'object' && payload !== null && 'skills' in (payload as Record<string, unknown>)
-      ? ((payload as Record<string, unknown>).skills as unknown)
-      : null)
-
-  if (!Array.isArray(entries)) {
-    throw new Error('Unexpected payload shape: expected an array')
-  }
-
-  const parsed = entries
-    .map((entry) => {
-      const skill = (entry || {}) as RawSkillPayload
-      const owner = normalize(skill.owner).toLowerCase() || 'unknown'
-      const slug = normalize(skill.slug || skill.name || '').toLowerCase() || safeId(skill.name)
-      const runtimeList = Array.isArray(skill.runtimes)
-        ? skill.runtimes
-        : Array.isArray(skill.runtime)
-          ? skill.runtime
-          : normalize(skill.runtime).split(',').filter(Boolean)
-      const runtimes = runtimeList.length > 0
-        ? runtimeList.map((runtime) => String(runtime).trim())
-        : ['unknown']
-
-      const tags = Array.isArray(skill.tags)
-        ? skill.tags.map((tag) => String(tag).trim()).filter(Boolean)
-        : normalize(skill.tagsText).split(',').map((tag) => String(tag).trim()).filter(Boolean)
-
-      return {
-        id: `${owner}:${slug}`,
-        name: normalize(skill.name || slug || 'Untitled'),
-        owner,
-        slug,
-        url: normalize(skill.url || ''),
-        path: normalize(skill.path || `skills/${slug}`),
-        runtimes,
-        runtimeText: runtimes.join(', ') || 'unknown',
-        tags,
-        updatedAt: normalize(skill.updatedAt || ''),
-        description: normalize(skill.description) || 'No description provided.',
-      }
-    })
-    .filter((item) => Boolean(item.owner && item.slug))
+  const parsed = await fetchIndexPayload()
 
   cachedSkills = parsed
   return parsed
 }
 
+export const fetchLiveSkillIndex = async (): Promise<SkillRecord[]> => {
+  return fetchIndexPayload('no-store')
+}
+
 export const collectOwners = (skills: SkillRecord[]): string[] =>
   uniqueSorted(skills.map((skill) => skill.owner))
-
-export const collectRuntimes = (skills: SkillRecord[]): string[] =>
-  uniqueSorted(skills.flatMap((skill) => skill.runtimes))
 
 export const collectTags = (skills: SkillRecord[]): string[] =>
   uniqueSorted(skills.flatMap((skill) => skill.tags))

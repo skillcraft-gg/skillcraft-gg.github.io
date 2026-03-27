@@ -12,6 +12,7 @@ type AppShellProps = {
   children: ReactNode
   inspector?: ReactNode
   copyClassName?: string
+  fullBleed?: boolean
 }
 
 export default function AppShell({
@@ -21,13 +22,14 @@ export default function AppShell({
   children,
   inspector,
   copyClassName = '',
+  fullBleed = false,
 }: AppShellProps) {
   const hasSidebar = typeof sidebar !== 'undefined' && sidebar !== null
   const hasInspector = typeof inspector !== 'undefined' && inspector !== null
 
   return (
     <CursorBias>
-      <section className="hero" aria-label={title}>
+      <section className={`hero${fullBleed ? ' hero--skills' : ''}`} aria-label={title}>
         <div className="bg">
           <FadeInImage src="/images/bg.png" alt="" aria-hidden="true" loading="eager" width={2400} height={1600} />
         </div>
@@ -49,10 +51,10 @@ export default function AppShell({
         <div className="noise"></div>
         <div className="vignette"></div>
 
-        <div className="shell">
+        <div className={`shell${fullBleed ? ' shell--wide' : ''}`}>
           <TopNav activePath={activePath} />
 
-          <div className={`content${!hasSidebar && !hasInspector ? ' content--single' : ''}`}>
+          <div className={`content${!hasSidebar && !hasInspector ? ' content--single' : ''}${fullBleed ? ' content--wide' : ''}`}>
             <div className={`copy${copyClassName ? ` ${copyClassName}` : ''} font-fade`}>
               {children}
             </div>

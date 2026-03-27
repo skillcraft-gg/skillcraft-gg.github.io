@@ -1,8 +1,8 @@
 export const ROUTES = [
-  { href: '/skills', label: 'Skills', external: false, disabled: true },
+  { href: '/skills', label: 'Skills', external: false, disabled: false },
   { href: '/loadouts', label: 'Loadouts', external: false, disabled: true },
   { href: '/credentials', label: 'Credentials', external: false, disabled: true },
-  { href: '/docs', label: 'Docs', external: false, disabled: false },
+  { href: 'https://skillcraft.gg/docs', label: 'Docs', external: true, disabled: false },
   { href: 'https://github.com/skillcraft-gg/skillcraft', label: 'GitHub', external: true, disabled: false },
 ]
 

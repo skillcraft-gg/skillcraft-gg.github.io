@@ -3,6 +3,7 @@ import type { Viewport } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
+import RouteMotionGate from '../components/RouteMotionGate'
 import { SITE_DESCRIPTION } from '../lib/navigation'
 import type { ReactNode } from 'react'
 
@@ -70,7 +71,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="shortcut icon" href="/images/skillcraft-icon-zoom.png" />
         <link rel="apple-touch-icon" href="/images/skillcraft-icon-zoom.png" />
       </head>
-      <body>{children}</body>
+      <body>
+        <RouteMotionGate />
+        {children}
+      </body>
     </html>
   )
 }
