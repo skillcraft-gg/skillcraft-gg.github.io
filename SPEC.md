@@ -19,7 +19,7 @@ The site renders route content from registry repositories during build:
 
 - `skillcraft-gg/skills-registry` provides skill definitions and assets.
 - `skillcraft-gg/loadouts` provides loadout definitions.
-- `skillcraft-gg/credentials` provides credential definitions and issued credentials.
+- `skillcraft-gg/credential-ledger` provides credential definitions and issued credentials.
 
 ## Build and Publish Model
 
@@ -46,7 +46,7 @@ routes are synchronized when source changes.
 
 ## GitHub Actions Rebuild Triggers
 
-- `repository_dispatch` events from `skillcraft-gg/skills-registry`, `skillcraft-gg/loadouts`, and `skillcraft-gg/credentials`.
+- `repository_dispatch` events from `skillcraft-gg/skills-registry`, `skillcraft-gg/loadouts`, and `skillcraft-gg/credential-ledger`.
 - Manual workflow dispatch for explicit rebuilds.
 
 Rebuild inputs should include changed source repo and commit information so stale
