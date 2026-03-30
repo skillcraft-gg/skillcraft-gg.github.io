@@ -1540,6 +1540,27 @@ h4 {
   }
 }
 
+@media (max-width: 1179px) {
+  .skills-list-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .skills-list-layout .skills-filter-form {
+    order: 1;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    top: auto;
+  }
+
+  .skills-list-layout .skills-list-main {
+    order: 2;
+    min-height: 0;
+  }
+}
+
 .skills-list-scroll--list {
   max-height: none;
 }
