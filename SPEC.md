@@ -42,7 +42,10 @@ routes are synchronized when source changes.
 - `/loadouts`
 - `/loadouts/<owner>/<slug>`
 - `/credentials`
-- `/credentials/users/<github>`
+- `/credentials/<owner>/<slug>`
+- `/credentials/profiles`
+- `/credentials/profiles/github/<github>`
+- `/credentials/profiles/github/<github>/<owner>/<slug>`
 
 ## GitHub Actions Rebuild Triggers
 

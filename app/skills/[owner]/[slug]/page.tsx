@@ -19,10 +19,21 @@ const INSTALL_PREFIX = 'skillcraft skills add '
 
 const defaultSummary = 'Explore this Skillcraft skill definition, source location, and supporting metadata.'
 
+const SEO_DESCRIPTION_TARGET = 100
+
+const ensureDescriptionLength = (value: string): string => {
+  const trimmed = (value || '').trim()
+  if (trimmed.length >= SEO_DESCRIPTION_TARGET) {
+    return trimmed
+  }
+
+  return `${trimmed} This skill page includes metadata details, usage guidance, and practical verification guidance.`
+}
+
 const buildDetailMetaDescription = (skill: SkillRecord, summary: string): string => {
   const compactSummary = buildCanonicalSummary(summary)
   if (compactSummary) {
-    return compactSummary
+    return ensureDescriptionLength(compactSummary)
   }
 
   const tagLine = skill.tags.length > 0 ? `Tags: ${skill.tags.join(', ')}` : 'Reusable skill definition'
@@ -88,11 +99,12 @@ const getMetadataFromSkill = async (skill: SkillRecord, summary: string): Promis
   const canonical = buildCanonical(skill.owner, skill.slug)
   const canonicalUrl = `${BASE_URL}${canonical}`
   const normalizedSummary = buildDetailMetaDescription(skill, summary)
+  const safeSummary = ensureDescriptionLength(normalizedSummary)
   const title = `${skill.name} | Skillcraft Skills`
 
   return {
     title,
-    description: normalizedSummary,
+    description: safeSummary,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -100,7 +112,7 @@ const getMetadataFromSkill = async (skill: SkillRecord, summary: string): Promis
       type: 'article',
       url: canonicalUrl,
       title,
-      description: normalizedSummary,
+      description: safeSummary,
       images: [
         {
           url: '/images/og-home.jpg',
@@ -113,7 +125,7 @@ const getMetadataFromSkill = async (skill: SkillRecord, summary: string): Promis
     twitter: {
       card: 'summary_large_image',
       title,
-      description: normalizedSummary,
+      description: safeSummary,
       images: ['/images/og-home.jpg'],
     },
     keywords: [...new Set(skill.tags)],

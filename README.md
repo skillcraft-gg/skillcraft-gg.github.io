@@ -3,8 +3,8 @@
 This repository publishes the canonical `skillcraft.gg` site on GitHub Pages.
 
 - Static, no backend
-- Generated pages for route index, skills index, and skill detail routes
-- Route placeholders for loadouts/credentials are preserved with static placeholders
+- Generated pages for route index, skills index, and skill/credentials detail routes
+- Loadout routes remain placeholders until implemented
 - Rebuild workflow via workflow_dispatch or repository_dispatch
 
 ## Local development
@@ -46,8 +46,11 @@ before refreshing.
 - `/skills/<owner>/<slug>`
 - `/loadouts`
 - `/credentials`
+- `/credentials/<owner>/<slug>`
+- `/credentials/profiles`
+- `/credentials/profiles/github/<github>`
+- `/credentials/profiles/github/<github>/<owner>/<slug>`
 - `/loadouts/<owner>/<slug>` (route placeholder)
-- `/credentials/users/<github>` (route placeholder)
 
 ## GitHub Actions
 

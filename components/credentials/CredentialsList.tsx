@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
-import { fetchLiveSkillIndex, type SkillRecord } from '../../lib/skillIndex'
-import { readFilters, buildSearchParams } from './filters'
-import CopyCommandButton from './CopyCommandButton'
+import CredentialImageFallback from './CredentialImageFallback'
+import { fetchLiveCredentialIndex, type CredentialDefinition } from '../../lib/credentialIndex'
+import { buildSearchParams, readFilters } from './filters'
+import { resolveCredentialImage } from './credentialImageResolver'
 
-type SkillsListProps = {
-  skills: SkillRecord[]
+type CredentialsListProps = {
+  credentials: CredentialDefinition[]
   owners: string[]
-  tags: string[]
 }
 
 const normalizeMatch = (value: string) => value.toLowerCase().trim()
@@ -31,10 +31,8 @@ const formatSummary = (value: string) => {
   return `${(boundary > 140 ? short.slice(0, boundary) : short).trim()}…`
 }
 
-const buildFallbackSummary = (skill: SkillRecord) => {
-  const tagCopy = skill.tags.length > 0 ? ` Includes ${skill.tags.slice(0, 4).join(', ')}.` : ''
-
-  return `${skill.name} from ${skill.owner}.${tagCopy}`.trim()
+const buildFallbackSummary = (credential: CredentialDefinition) => {
+  return `${credential.name} by ${credential.owner}.`
 }
 
 const parseUpdatedAt = (value: string): number => {
@@ -80,14 +78,36 @@ const stripNoDescription = (value: string) => {
   return value === 'No description provided.' ? '' : value
 }
 
-export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
+const normalizeRequirementsSummary = (requirements: Record<string, unknown>) => {
+  if (!requirements || typeof requirements !== 'object') {
+    return 'No explicit requirements provided.'
+  }
+
+  const minCommits = typeof requirements.minCommits === 'number'
+    ? `${requirements.minCommits} minimum commits`
+    : ''
+
+  const minRepositories = typeof requirements.minRepositories === 'number'
+    ? `${requirements.minRepositories} minimum repositories`
+    : ''
+
+  const detailParts = [minCommits, minRepositories].filter(Boolean)
+
+  if (detailParts.length === 0) {
+    return 'Requirements defined in the ledger.'
+  }
+
+  return detailParts.join(' · ')
+}
+
+export default function CredentialsList({ credentials, owners }: CredentialsListProps) {
   const router = useRouter()
-  const pathname = usePathname() || '/skills'
+  const pathname = usePathname() || '/credentials'
   const searchParams = useSearchParams()
   const currentParams = new URLSearchParams(searchParams || undefined)
 
   const state = readFilters(currentParams)
-  const [skillRows, setSkillRows] = useState<SkillRecord[]>(skills)
+  const [credentialRows, setCredentialRows] = useState<CredentialDefinition[]>(credentials)
   const resultsRef = useRef<HTMLDivElement>(null)
   const [showTopFade, setShowTopFade] = useState(false)
   const [showBottomFade, setShowBottomFade] = useState(false)
@@ -97,26 +117,25 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
 
     const refresh = async () => {
       try {
-        const liveSkills = await fetchLiveSkillIndex()
-        if (!cancelled && liveSkills.length > 0) {
-          setSkillRows((previousSkills) => {
-            if (previousSkills.length === liveSkills.length) {
-              const same = previousSkills.every(
-                (skill, index) =>
-                  skill.id === liveSkills[index].id
-                  && skill.updatedAt === liveSkills[index].updatedAt,
-              )
+        const liveCredentials = await fetchLiveCredentialIndex()
+        if (!cancelled && liveCredentials.length > 0) {
+          setCredentialRows((previousCredentials) => {
+            if (previousCredentials.length === liveCredentials.length) {
+              const same = previousCredentials.every((item, index) => (
+                item.id === liveCredentials[index].id
+                && item.updatedAt === liveCredentials[index].updatedAt
+              ))
 
               if (same) {
-                return previousSkills
+                return previousCredentials
               }
             }
 
-            return liveSkills
+            return liveCredentials
           })
         }
       } catch {
-        // Keep the server-rendered index if live refresh fails.
+        // Keep the server-rendered list if live refresh fails.
       }
     }
 
@@ -141,11 +160,10 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
     setShowBottomFade(viewportBottom < contentBottom - 1)
   }, [])
 
-  const applyFilter = (nextState: Partial<{ q: string; owner: string; tag: string; sort: string; view: string }>) => {
+  const applyFilter = (nextState: Partial<{ q: string; owner: string; sort: string; view: string }>) => {
     const next = buildSearchParams(currentParams, {
       q: nextState.q ?? state.q,
       owner: nextState.owner ?? state.owner,
-      tag: nextState.tag ?? state.tag,
       sort: nextState.sort ?? state.sort,
       view: nextState.view ?? state.view,
     })
@@ -154,24 +172,22 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
   }
 
-  const filteredSkills = useMemo(() => {
-    return skillRows.filter((skill) => {
-      const summary = stripNoDescription(skill.description)
+  const filteredCredentials = useMemo(() => {
+    return credentialRows.filter((credential) => {
+      const summary = stripNoDescription(credential.description)
       const matchesQuery = !state.q
-        || normalizeMatch(skill.name).includes(state.q)
-        || normalizeMatch(skill.owner).includes(state.q)
+        || normalizeMatch(credential.name).includes(state.q)
+        || normalizeMatch(credential.owner).includes(state.q)
         || normalizeMatch(summary).includes(state.q)
-        || normalizeMatch(skill.tags.join(' ')).includes(state.q)
 
-      const matchesOwner = !state.owner || skill.owner === state.owner
-      const matchesTag = !state.tag || skill.tags.map(normalizeMatch).includes(state.tag)
+      const matchesOwner = !state.owner || credential.owner === state.owner
 
-      return matchesQuery && matchesOwner && matchesTag
+      return matchesQuery && matchesOwner
     })
-  }, [skillRows, state])
+  }, [credentialRows, state])
 
-  const sortedSkills = useMemo(() => {
-    const clone = [...filteredSkills]
+  const sortedCredentials = useMemo(() => {
+    const clone = [...filteredCredentials]
 
     if (state.sort === 'name') {
       clone.sort((a, b) => a.name.localeCompare(b.name))
@@ -185,11 +201,11 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
     }
 
     return clone
-  }, [filteredSkills, state.sort])
+  }, [filteredCredentials, state.sort])
 
-  const results = useMemo(() => sortedSkills, [sortedSkills])
+  const results = useMemo(() => sortedCredentials, [sortedCredentials])
 
-  const hasFilter = state.q || state.owner || state.tag
+  const hasFilter = state.q || state.owner
   const isListView = state.view === 'list'
   const isCardView = state.view === 'cards'
 
@@ -220,14 +236,14 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
   }, [results, isListView, updateScrollFades])
 
   return (
-    <section className="section skills-workspace" aria-label="Skills workspace">
+    <section className="section skills-workspace" aria-label="Credential workspace">
       <div className="section-head section-head--skills">
         <div>
-          <h1>Skills</h1>
-          <p>Browse and install reusable skill definitions.</p>
+          <h1>Credentials</h1>
+          <p>Browse credential definitions and claim eligibility requirements.</p>
         </div>
         <span id="result-count" className="count-pill skills-count">
-          {results.length} of {skillRows.length} shown
+          {results.length} of {credentialRows.length} shown
         </span>
       </div>
 
@@ -238,19 +254,17 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
             aria-live="polite"
           >
             <div
-              id="skill-results"
+              id="credential-results"
               ref={resultsRef}
               className={`skills-list-scroll ${isListView ? 'skills-list-scroll--list' : ''}`}
               aria-live="polite"
             >
-              <div className={`item-grid ${isListView ? 'item-grid--list' : ''}`}>
-                {results.map((skill) => {
-                  const rawSummary = stripNoDescription(skill.description)
-                  const fallbackSummary = buildFallbackSummary(skill)
-                  const summary = rawSummary || fallbackSummary
+              <div className={`item-grid ${isListView ? 'item-grid--list' : 'item-grid--credentials'}`}>
+                {results.map((credential) => {
+                  const summary = stripNoDescription(credential.description) || buildFallbackSummary(credential)
                   const shortSummary = formatSummary(summary)
-                  const installCommand = `skillcraft skills add ${skill.owner}/${skill.slug}`
-                  const cardPath = `/skills/${skill.owner}/${skill.slug}/`
+                  const requirements = normalizeRequirementsSummary(credential.requirements)
+                  const cardPath = `/credentials/${credential.owner}/${credential.slug}/`
 
                   const openCard = () => {
                     router.push(cardPath)
@@ -269,43 +283,43 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
 
                   return (
                     <article
-                      key={skill.id}
-                      className={`skill-card ${isListView ? 'skill-card--list' : ''}`}
+                      key={credential.id}
+                      className={`skill-card credential-card ${isListView ? 'skill-card--list' : ''}`}
                       role="link"
                       tabIndex={0}
                       onClick={handleCardClick}
                       onKeyDown={handleCardKeydown}
-                      aria-label={`Open ${skill.name} skill page`}
+                      aria-label={`Open ${credential.name} credential page`}
                     >
-                      <header>
-                        <div className="skill-card__header">
-                          <p className="label label--inline">{skill.owner}</p>
-                          <h3>{skill.name}</h3>
-                        </div>
-                      </header>
-
-                      <p className="skill-card__description">{shortSummary}</p>
-
-                      <div className="skill-card__divider" />
-
-                      <div className="meta-row">
-                        {skill.tags.map((tag) => (
-                          <span className="meta-pill meta-chip" key={`${skill.id}-${tag}`}>
-                            {tag}
-                          </span>
-                        ))}
+                      <div className="credential-card-media">
+                        <CredentialImageFallback
+                          src={resolveCredentialImage(credential)}
+                          alt={`${credential.name} credential image`}
+                          loading="lazy"
+                          className="credential-card-image"
+                        />
                       </div>
 
-                      <p className="skill-meta-text">{formatRelativeDate(skill.updatedAt)}</p>
+                      <div className="credential-card-body">
+                        <div className="credential-card-body-top">
+                          <header>
+                            <div className="skill-card__header">
+                              <p className="label label--inline">{credential.owner}</p>
+                              <h3>{credential.name}</h3>
+                            </div>
+                          </header>
 
-                      <div
-                        className="skill-install-row"
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        <code className="skill-install" title={`Install command: ${installCommand}`}>
-                          {installCommand}
-                        </code>
-                        <CopyCommandButton text={installCommand} />
+                          <p className="skill-card__description">{shortSummary}</p>
+                        </div>
+
+                        <div className="credential-card-body-bottom">
+                          <div className="skill-card__divider" />
+
+                          <p className="skill-meta-text" title={requirements}>
+                            {requirements}
+                          </p>
+                          <p className="skill-meta-text">{formatRelativeDate(credential.updatedAt)}</p>
+                        </div>
                       </div>
                     </article>
                   )
@@ -315,17 +329,17 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
           </div>
 
           <p id="no-results" className={`caption${results.length > 0 ? ' hidden' : ''}`}>
-            No skills matched your filters.
+            No credentials matched your filters.
           </p>
         </div>
 
-        <form className="skills-filter-form" aria-label="Filter skills" onSubmit={(event) => event.preventDefault()}>
+        <form className="skills-filter-form" aria-label="Filter credentials" onSubmit={(event) => event.preventDefault()}>
           <label className="skills-search">
             <span className="label">Search</span>
             <input
-              id="skill-search"
+              id="credential-search"
               type="search"
-              placeholder="Search name, owner, tag, or summary"
+              placeholder="Search name, owner, or summary"
               value={state.q}
               onChange={(event) => applyFilter({ q: event.currentTarget.value.toLowerCase() })}
             />
@@ -349,22 +363,6 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
             </label>
 
             <label>
-              <span className="label">Tag</span>
-              <select
-                id="tag-filter"
-                value={state.tag}
-                onChange={(event) => applyFilter({ tag: event.currentTarget.value })}
-              >
-                <option value="">All tags</option>
-                {tags.map((tag) => (
-                  <option value={tag} key={`tag-${tag}`}>
-                    {tag}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
               <span className="label">Sort</span>
               <select
                 id="sort-filter"
@@ -379,7 +377,7 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
 
             <label className="skills-view-row">
               <span className="label">View</span>
-              <div className="skills-view-toggle" role="group" aria-label="Skills view mode">
+              <div className="skills-view-toggle" role="group" aria-label="Credential view mode">
                 <button
                   type="button"
                   className={isCardView ? 'tag tag-row--active' : 'tag'}
@@ -441,34 +439,16 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
                     owner: {state.owner}
                   </button>
                 ) : null}
-                {state.tag ? (
-                  <button type="button" className="tag" onClick={() => applyFilter({ tag: '' })}>
-                    tag: {state.tag}
-                  </button>
-                ) : null}
               </div>
               <button
                 type="button"
                 className="tag tag-row--active"
-                onClick={() => applyFilter({ q: '', owner: '', tag: '' })}
+                onClick={() => applyFilter({ q: '', owner: '' })}
               >
                 Clear all
               </button>
             </div>
           ) : null}
-
-          <div className="tag-row" aria-live="polite">
-            {tags.slice(0, 18).map((tag) => (
-              <button
-                key={`tag-chip-${tag}`}
-                type="button"
-                className={`tag ${state.tag === tag ? 'tag-row--active' : ''}`}
-                onClick={() => applyFilter({ tag: state.tag === tag ? '' : tag })}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
         </form>
       </div>
     </section>

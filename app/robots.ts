@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/loadouts', '/credentials'],
+        disallow: ['/loadouts'],
       },
     ],
     sitemap: 'https://skillcraft.gg/sitemap.xml',

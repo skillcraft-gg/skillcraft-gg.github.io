@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 
 import { fetchSkillIndex } from '../lib/skillIndex'
+import { fetchCredentialIndex } from '../lib/credentialIndex'
+import { fetchIssuedCredentialsIndex } from '../lib/issuedCredentialsIndex'
 
 const BASE_URL = 'https://skillcraft.gg'
 
@@ -15,6 +17,26 @@ const parseLastModified = (value: string) => {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const skills = await fetchSkillIndex()
+  const credentials = await fetchCredentialIndex()
+  const issuedProfiles = await fetchIssuedCredentialsIndex()
+
+  const issuedRoutes = issuedProfiles.flatMap((profile) =>
+    profile.credentials.map((credential) => ({
+      url: `${BASE_URL}/credentials/profiles/github/${profile.github}/${credential.definitionOwner}/${credential.definitionSlug}/`,
+      lastModified: parseLastModified(credential.issuedAt) || parseLastModified(profile.credentials[0]?.issuedAt) || new Date(),
+      priority: 0.7,
+    })),
+  )
+
+  const profileRoutes = issuedProfiles.map((profile) => ({
+    url: `${BASE_URL}/credentials/profiles/github/${profile.github}/`,
+    lastModified: parseLastModified(profile.credentials[0]?.issuedAt) || new Date(),
+    priority: 0.75,
+  }))
+
+  const uniqueIssued = issuedRoutes.filter((route, index, allRoutes) =>
+    allRoutes.findIndex((entry) => entry.url === route.url) === index,
+  )
 
   const routes: MetadataRoute.Sitemap = [
     {
@@ -32,6 +54,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: parseLastModified(skill.updatedAt) || new Date(),
       priority: 0.8,
     })),
+    {
+      url: `${BASE_URL}/credentials`,
+      lastModified: new Date(),
+      priority: 0.9,
+    },
+    ...credentials.map((credential) => ({
+      url: `${BASE_URL}/credentials/${credential.owner}/${credential.slug}/`,
+      lastModified: parseLastModified(credential.updatedAt) || new Date(),
+      priority: 0.8,
+    })),
+    {
+      url: `${BASE_URL}/credentials/profiles`,
+      lastModified: new Date(),
+      priority: 0.8,
+    },
+    ...profileRoutes,
+    ...uniqueIssued,
   ]
 
   return routes

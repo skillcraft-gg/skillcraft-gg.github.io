@@ -303,8 +303,8 @@ const main = async () => {
   }
 
   const robotsHtml = fs.existsSync(outRobots) ? readFile(outRobots).toLowerCase() : ''
-  if (!robotsHtml.includes('disallow: /loadouts') || !robotsHtml.includes('disallow: /credentials')) {
-    failed.push('robots.txt should disallow /loadouts and /credentials')
+  if (!robotsHtml.includes('disallow: /loadouts')) {
+    failed.push('robots.txt should disallow /loadouts')
   }
 
   if (failed.length > 0) {

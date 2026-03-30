@@ -22,7 +22,7 @@ Build and enable the missing skills routes using the existing skill registry whi
 - Structured data on skill pages.
 
 ### Out of scope
-- Implementing `/loadouts` and `/credentials` pages.
+- Implementing `/loadouts` pages.
 - Major visual redesign outside existing design system.
 
 ## Existing assets to reuse
@@ -40,11 +40,12 @@ Build and enable the missing skills routes using the existing skill registry whi
 
 ## Current baseline snapshot
 
-- There are no active route files for:
+- Skills routes are active:
   - `app/skills/page.tsx`
   - `app/skills/[owner]/[slug]/page.tsx`
-- Navigation currently disables Skills in `lib/navigation.ts`.
-- Existing metadata defaults are defined in `app/layout.tsx` and static fallback is for page metadata only.
+- `ROUTES` for Skills is enabled in `lib/navigation.ts`.
+- Existing credentials routes are now active and documented in `PLAN_CREDENTIALS_PAGES.md`.
+- `/loadouts` routes and route placeholders are still pending.
 
 ## Work plan by file
 
@@ -141,7 +142,7 @@ Build and enable the missing skills routes using the existing skill registry whi
   - Include:
     - `sitemap: 'https://skillcraft.gg/sitemap.xml'`
     - `rules: [{ userAgent: '*', allow: '/' }]`
-  - Optional: disallow `/loadouts` and `/credentials` until those routes are active.
+  - Optional: disallow `/loadouts` until that route is active.
 
 ## Implementation sequence
 
@@ -178,7 +179,7 @@ Build and enable the missing skills routes using the existing skill registry whi
 ## Decision points
 
 - D1: Structured data schema is set to `CreativeWork` (decision confirmed).
-- D2: Robots policy is set to disallow placeholder routes (`/loadouts`, `/credentials`).
+- D2: Robots policy is set to disallow placeholder routes (`/loadouts`).
 
 ### D1 details
 
@@ -188,5 +189,5 @@ Build and enable the missing skills routes using the existing skill registry whi
 ### D2 details
 
 - Chosen: disallow placeholder routes while they remain unimplemented.
-- Rationale: keeps crawl budget focused on high-signal pages and avoids thin/placeholder indexing.
-- Scope: apply this in `app/robots.ts`.
+  - Rationale: keeps crawl budget focused on high-signal pages and avoids thin/placeholder indexing.
+  - Scope: apply this in `app/robots.ts`.

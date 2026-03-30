@@ -10,8 +10,7 @@ top navigation, and supporting fallback behavior for unavailable routes.
 
 - Primary user experience is the homepage at `/`.
 - Other historical routes are intentionally unavailable in app routing:
-  - `/skills`, `/skills/[owner]/[slug]`, `/loadouts`, `/loadouts/[owner]/[slug]`,
-    `/credentials`, `/credentials/users/[github]`, `/docs`
+  - `/loadouts`, `/loadouts/[owner]/[slug]`
 - Navigation items for non-home sections remain visible but disabled.
 - GitHub route remains active in top nav and in page CTA.
 
@@ -177,7 +176,7 @@ The following legacy dashboard patterns are no longer part of the current shippi
 state and are intentionally omitted from active design implementation:
 
 - Full multi-section dashboard composition (`sidebar`, `inspector`) for all routes
-- Item browsing grids and loadout/credential/skills registries on `/skills`, `/loadouts`, `/credentials`
+- Item browsing grids and route-dependent detail pages on `/loadouts` are intentionally omitted while loadouts remain pending.
 - Route-dependent complex detail pages beyond current scope
 
 If/when additional sections are reintroduced, they should follow this shell pattern

@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "check": "next lint",
-    "check:skills": "node ./scripts/check-skills-pages.mjs"
+    "check:skills": "node ./scripts/check-skills-pages.mjs",
+    "check:credentials": "node ./scripts/check-credentials-pages.mjs"
   },
   "dependencies": {
     "next": "^14.2.5",
