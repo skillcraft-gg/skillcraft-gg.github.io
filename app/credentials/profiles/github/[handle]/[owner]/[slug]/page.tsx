@@ -15,7 +15,7 @@ import {
 import {
   findIssuedCredentialForProfile,
   findIssuedProfile,
-  fetchIssuedCredentialsIndex,
+  fetchLiveIssuedCredentialsIndex,
 } from '../../../../../../../lib/issuedCredentialsIndex'
 
 type IssuedCredentialDetailParams = {
@@ -93,18 +93,75 @@ const stringifySubject = (subject: unknown) => {
   return output
 }
 
-const buildCommitLines = (items: string[]) => {
+const toRepositoryPath = (value: string) => {
+  const repository = (value || '').trim().replace(/^@+/, '').replace(/^https:\/\//i, '').replace(/\/+$/g, '')
+  if (!/^[a-z0-9-_.]+\/[a-z0-9-_.]+$/i.test(repository)) {
+    return ''
+  }
+
+  return repository.toLowerCase()
+}
+
+const buildCommitLines = (items: string[], fallbackRepository?: string) => {
   if (!items || items.length === 0) {
     return <p className="caption">No source commits were referenced.</p>
+  }
+
+  const defaultRepository = toRepositoryPath(fallbackRepository || '')
+
+  const getCommitLink = (entry: string) => {
+    const commit = entry.trim()
+    if (!commit) {
+      return null
+    }
+
+    if (/^https?:\/\//.test(commit)) {
+      return commit
+    }
+
+    const ownerRepoWithAtSha = /^([a-z0-9-_.]+\/[a-z0-9-_.]+)@([0-9a-f]{7,40})$/i.exec(commit)
+    if (ownerRepoWithAtSha) {
+      return `https://github.com/${ownerRepoWithAtSha[1]}/commit/${ownerRepoWithAtSha[2]}`
+    }
+
+    const commitOnly = /^[0-9a-f]{7,40}$/i.test(commit)
+    if (commitOnly) {
+      if (defaultRepository) {
+        return `https://github.com/${defaultRepository}/commit/${commit}`
+      }
+
+      return `https://github.com/search?q=${encodeURIComponent(commit)}&type=commits`
+    }
+
+    const maybePath = /(?:https:\/\/github\.com\/)?([a-z0-9-_.]+\/[a-z0-9-_.]+)(?:\/commit)?\/([0-9a-f]{7,40})(?:\/)?$/i.exec(commit)
+    if (maybePath) {
+      return `https://github.com/${maybePath[1]}/commit/${maybePath[2]}`
+    }
+
+    const withRepoSuffix = /^([a-z0-9-_.]+\/[a-z0-9-_.]+):([0-9a-f]{7,40})$/i.exec(commit)
+    if (withRepoSuffix) {
+      return `https://github.com/${withRepoSuffix[1]}/commit/${withRepoSuffix[2]}`
+    }
+
+    return null
   }
 
   return (
     <ul className="detail-list detail-list--compact">
       {items.map((entry, index) => (
         <li key={`${entry}-${index}`}>
-          <a href={`https://github.com/${entry}`} target="_blank" rel="noreferrer">
-            {entry}
-          </a>
+          {(() => {
+            const href = getCommitLink(entry)
+            if (!href) {
+              return <span>{entry}</span>
+            }
+
+            return (
+            <a href={href} target="_blank" rel="noreferrer">
+              {entry}
+            </a>
+            )
+          })()}
         </li>
       ))}
     </ul>
@@ -115,29 +172,43 @@ const getNoIssuedHandle = () => '__skillcraft-no-profiles__'
 
 const getNoIssuedPlaceholder = () => '__skillcraft-no-credential__'
 
+const safeFetchProfiles = async () => {
+  try {
+    return await fetchLiveIssuedCredentialsIndex()
+  } catch {
+    return []
+  }
+}
+
 const buildMissingIssuedParams = (handle: string): IssuedCredentialDetailParams[] => [{
   handle: handle || getNoIssuedHandle(),
   owner: getNoIssuedPlaceholder(),
   slug: getNoIssuedPlaceholder(),
 }]
 
-export async function generateStaticParams({ params }: { params: { handle: string } }): Promise<IssuedCredentialDetailParams[]> {
-  const profiles = await fetchIssuedCredentialsIndex()
-  const normalizedHandle = (params.handle || '').toLowerCase()
+export async function generateStaticParams(): Promise<IssuedCredentialDetailParams[]> {
+  const profiles = await safeFetchProfiles()
 
-  const profileRoutes = profiles
-    .filter((profile) => profile.github === normalizedHandle)
-    .flatMap((profile) => profile.credentials.map((credential) => ({
-      handle: profile.github,
-      owner: credential.definitionOwner,
-      slug: credential.definitionSlug,
-    })))
+  const profileRoutes = profiles.flatMap((profile) => profile.credentials.map((credential) => ({
+    handle: profile.github,
+    owner: credential.definitionOwner,
+    slug: credential.definitionSlug,
+  })))
 
   if (profileRoutes.length > 0) {
-    return profileRoutes
+    const seen = new Set<string>()
+    return profileRoutes.filter((entry) => {
+      const key = `${entry.handle}:${entry.owner}:${entry.slug}`
+      if (seen.has(key)) {
+        return false
+      }
+
+      seen.add(key)
+      return true
+    })
   }
 
-  return buildMissingIssuedParams(normalizedHandle)
+  return buildMissingIssuedParams('')
 }
 
 export async function generateMetadata({ params }: { params: IssuedCredentialDetailParams }): Promise<Metadata> {
@@ -145,7 +216,7 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
   const owner = decodeURIComponent((params.owner || '').toLowerCase())
   const slug = decodeURIComponent((params.slug || '').toLowerCase())
 
-  const issuedProfiles = await fetchIssuedCredentialsIndex()
+  const issuedProfiles = await safeFetchProfiles()
   const profile = findIssuedProfile(issuedProfiles, handle)
   const issued = profile ? findIssuedCredentialForProfile(profile, owner, slug) : null
   const definitions = await fetchCredentialIndex()
@@ -205,7 +276,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const owner = decodeURIComponent((params.owner || '').toLowerCase())
   const slug = decodeURIComponent((params.slug || '').toLowerCase())
 
-  const issuedProfiles = await fetchIssuedCredentialsIndex()
+  const issuedProfiles = await safeFetchProfiles()
   const profile = findIssuedProfile(issuedProfiles, handle)
   if (!profile) {
     notFound()
@@ -235,20 +306,16 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
         copyClassName="copy--wide copy-skill-detail"
         fullBleed
       >
+        <Link className="btn btn-secondary detail-back-link" href={`/credentials/profiles/github/${profile.github}/`} aria-label="Back to profile">
+          ← Back to profile
+        </Link>
+
         <section className="section" aria-label="Issued credential trail">
           <div className="section-head section-head--skills">
             <div>
               <p className="eyebrow">Issued credential</p>
               <h1>{definition.name}</h1>
               <p>{`Definition: ${definition.id}`}</p>
-            </div>
-            <div className="skills-filter-row">
-              <Link className="btn btn-secondary" href={`/credentials/profiles/github/${profile.github}/`}>
-                ← Back to profile
-              </Link>
-              <Link className="btn btn-secondary" href="/credentials/profiles">
-                All profiles
-              </Link>
             </div>
           </div>
         </section>
@@ -272,40 +339,37 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                 <p className="caption">{`Issued ${issuedDate}`}</p>
                 <p className="caption">{`Claim ID: ${issued.claimId || 'not provided'}`}</p>
               </div>
-            </div>
 
-            <div className="detail-action-row">
-               <section className="panel detail-sidebar-panel">
-                 <h2 className="panel-title">Credential definition</h2>
-                 <ul className="detail-list detail-list--compact">
-                   <li><strong>Handle:</strong> @{profile.github}</li>
-                   <li><strong>Owner:</strong> {definition.owner || owner}</li>
-                  <li><strong>Definition:</strong> {definition.id}</li>
-                  <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
-                  <li><strong>Issued:</strong> {issuedDate}</li>
-                   <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
-                 </ul>
-               </section>
-
-               <section className="panel detail-sidebar-panel">
-                 <h2 className="panel-title">Requirements</h2>
-                 <CredentialRequirementsRenderer requirements={definition.requirements} />
-               </section>
-
-               <section className="panel detail-sidebar-panel">
-                 <h2 className="panel-title">Evidence details</h2>
-                 <ul className="detail-list detail-list--compact">
-                   <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
+              <section className="detail-summary">
+                <h2 className="panel-title">Evidence details</h2>
+                <ul className="detail-list detail-list--compact">
+                  <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
                   <li><strong>Referenced commits:</strong> {issued.sourceCommits.length}</li>
                 </ul>
 
                 <p className="panel-title" style={{ marginTop: '1rem' }}>Subject payload</p>
                 <pre className="metadata-json">{stringifySubject(issued.subject)}</pre>
+
+                <h2 className="panel-title">Source commits</h2>
+                {buildCommitLines(issued.sourceCommits, `${definition.owner}/${definition.slug}`)}
+              </section>
+            </div>
+            <div className="detail-action-row">
+              <section className="panel detail-sidebar-panel">
+                <h2 className="panel-title">Credential definition</h2>
+                <ul className="detail-list detail-list--compact">
+                  <li><strong>Handle:</strong> @{profile.github}</li>
+                  <li><strong>Owner:</strong> {definition.owner || owner}</li>
+                  <li><strong>Definition:</strong> {definition.id}</li>
+                  <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
+                  <li><strong>Issued:</strong> {issuedDate}</li>
+                  <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
+                </ul>
               </section>
 
               <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Source commits</h2>
-                {buildCommitLines(issued.sourceCommits)}
+                <h2 className="panel-title">Requirements</h2>
+                <CredentialRequirementsRenderer requirements={definition.requirements} />
               </section>
             </div>
           </div>

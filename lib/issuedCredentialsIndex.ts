@@ -12,6 +12,11 @@ export type IssuedCredentialSummary = {
   definitionSlug: string
 }
 
+export type IssuedCredentialProfileMatch = {
+  profile: IssuedUserRecord
+  issuedCredential: IssuedCredentialSummary
+}
+
 export type IssuedUserRecord = {
   github: string
   issuedCount: number
@@ -42,8 +47,23 @@ const normalizeHandle = (value: unknown): string => {
 const normalizeSlug = (value: unknown): string => normalize(value).toLowerCase()
 
 const parseDefinition = (value: string): [string, string] => {
-  const [rawOwner, rawSlug] = normalize(value).split('/').filter(Boolean)
-  return [normalizeSlug(rawOwner), normalizeSlug(rawSlug)]
+  const normalizedDefinition = normalize(value)
+  if (!normalizedDefinition) {
+    return ['', '']
+  }
+
+  const rawParts = normalizedDefinition.includes('://')
+    ? normalizedDefinition.split('://').slice(1).join('://').split('/')
+    : normalizedDefinition.split('/')
+
+  const filteredParts = rawParts
+    .map((entry) => normalize(entry))
+    .filter(Boolean)
+
+  const owner = filteredParts[filteredParts.length - 2] || ''
+  const slug = normalizeSlug(filteredParts[filteredParts.length - 1] || '')
+
+  return [normalizeSlug(owner), slug.replace(/\.json$/i, '')]
 }
 
 const normalizeSourceCommits = (value: unknown): string[] => {
@@ -206,4 +226,32 @@ export const findIssuedCredentialForProfile = (
     credential.definitionOwner === matchOwner
     && credential.definitionSlug === matchSlug
   ))
+}
+
+export const findIssuedProfilesForCredential = (
+  profiles: IssuedUserRecord[],
+  owner: string,
+  slug: string,
+) => {
+  const matchOwner = normalizeSlug(owner)
+  const matchSlug = normalizeSlug(slug)
+  const matchDefinition = `${matchOwner}/${matchSlug}`
+
+  return profiles
+    .map((profile) => {
+      const issuedCredential = profile.credentials.find((credential) => (
+        credential.definitionOwner === matchOwner
+        && credential.definitionSlug === matchSlug
+      ) || normalize(credential.definition) === matchDefinition)
+
+      if (!issuedCredential) {
+        return null
+      }
+
+      return {
+        profile,
+        issuedCredential,
+      }
+    })
+    .filter((entry): entry is IssuedCredentialProfileMatch => Boolean(entry))
 }

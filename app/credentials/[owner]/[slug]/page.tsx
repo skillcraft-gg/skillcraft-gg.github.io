@@ -12,6 +12,10 @@ import {
   fetchCredentialIndex,
   type CredentialDefinition,
 } from '../../../../lib/credentialIndex'
+import {
+  findIssuedProfilesForCredential,
+  fetchLiveIssuedCredentialsIndex,
+} from '../../../../lib/issuedCredentialsIndex'
 
 type CredentialDetailParams = {
   owner: string
@@ -34,6 +38,8 @@ const ensureDescriptionLength = (value: string): string => {
 }
 
 const buildCanonical = (owner: string, slug: string) => `/credentials/${owner}/${slug}/`
+
+const buildIssuedListUrl = (owner: string, slug: string) => `${buildCanonical(owner, slug)}issued/`
 
 const normalizeText = (value: string): string => {
   if (!value) {
@@ -60,6 +66,18 @@ const buildSummaryForJsonLd = (credential: CredentialDefinition) => {
   return normalizeText(credential.description) || buildFallbackSummary(credential)
 }
 
+const formatIssuedCount = (count: number) => {
+  if (count === 0) {
+    return 'No users'
+  }
+
+  if (count === 1) {
+    return '1 user'
+  }
+
+  return `${count} users`
+}
+
 const formatUpdated = (value: string) => {
   if (!value) {
     return 'Unknown'
@@ -75,6 +93,14 @@ const formatUpdated = (value: string) => {
     month: 'short',
     day: 'numeric',
   })
+}
+
+const safeFetchIssuedProfiles = async () => {
+  try {
+    return await fetchLiveIssuedCredentialsIndex()
+  } catch {
+    return []
+  }
 }
 
 const stringifyValue = (value: unknown): string => {
@@ -222,6 +248,11 @@ export default async function CredentialDetailPage({ params }: { params: Credent
     .filter(([key, value]) => isDisplayableMetadata(key, value))
     .sort((a, b) => a[0].localeCompare(b[0]))
 
+  const issuedProfiles = await safeFetchIssuedProfiles()
+  const issuedUsers = findIssuedProfilesForCredential(issuedProfiles, selected.owner, selected.slug)
+  const issuedCount = issuedUsers.length
+  const issuedListUrl = buildIssuedListUrl(selected.owner, selected.slug)
+
   return (
     <>
       <CredentialJsonLd
@@ -243,15 +274,15 @@ export default async function CredentialDetailPage({ params }: { params: Credent
         <section className="section skill-detail" aria-label={`Credential detail for ${selected.name}`}>
           <div className="detail-summary-layout">
             <div className="detail-summary-column">
-                <CredentialDetailSummaryPanel
-                  owner={selected.owner}
-                  name={selected.name}
-                  updatedAt={formatUpdated(selected.updatedAt)}
-                  sourceUrl={selected.url}
-                  imageUrl={resolveCredentialImage(selected)}
-                  summary={selected.description}
-                  fallbackSummary={defaultSummary}
-                />
+              <CredentialDetailSummaryPanel
+                owner={selected.owner}
+                name={selected.name}
+                updatedAt={formatUpdated(selected.updatedAt)}
+                sourceUrl={selected.url}
+                imageUrl={resolveCredentialImage(selected)}
+                summary={selected.description}
+                fallbackSummary={defaultSummary}
+              />
             </div>
 
             <div className="detail-action-row">
@@ -262,14 +293,20 @@ export default async function CredentialDetailPage({ params }: { params: Credent
                   <li><strong>Slug:</strong> {selected.slug}</li>
                   <li><strong>Updated:</strong> {formatUpdated(selected.updatedAt)}</li>
                   <li><strong>Path:</strong> {selected.path || 'unknown'}</li>
-                  <li><strong>Registry ID:</strong> {selected.id}</li>
-                </ul>
-              </section>
-
-                <section className="panel detail-sidebar-panel">
-                  <h2 className="panel-title">Requirements</h2>
-                  <CredentialRequirementsRenderer requirements={selected.requirements} />
+                   <li><strong>Registry ID:</strong> {selected.id}</li>
+                   <li>
+                     <strong>Issued:</strong> {formatIssuedCount(issuedCount)}
+                     <Link className="tag" href={issuedListUrl} aria-label={`View issued profiles for ${selected.name}`}>
+                       View Profiles
+                     </Link>
+                   </li>
+                  </ul>
                 </section>
+
+              <section className="panel detail-sidebar-panel">
+                <h2 className="panel-title">Requirements</h2>
+                <CredentialRequirementsRenderer requirements={selected.requirements} />
+              </section>
 
               <section className="panel detail-sidebar-panel">
                 <h2 className="panel-title">Index metadata</h2>

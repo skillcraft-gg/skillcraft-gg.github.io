@@ -1906,6 +1906,48 @@ h4 {
   max-width: max-content;
 }
 
+.profile-header-row {
+  display: inline-flex;
+  align-items: stretch;
+  align-self: stretch;
+  gap: 14px;
+}
+
+.profile-header-meta {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+  min-height: var(--profile-header-avatar-size);
+}
+
+.profile-page-avatar {
+  width: auto;
+  height: 100%;
+  min-height: var(--profile-header-avatar-size);
+  aspect-ratio: 1 / 1;
+  flex: 0 0 auto;
+  align-self: stretch;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  object-fit: cover;
+  object-position: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.profile-credential-header .section-head--skills {
+  min-height: var(--profile-header-avatar-size);
+  align-items: flex-start;
+}
+
+.profile-github-link {
+  align-self: flex-start;
+}
+
+.profile-credential-header {
+  --profile-header-avatar-size: 76px;
+}
+
 .panel {
   padding: 12px;
   border-radius: 12px;
@@ -2926,6 +2968,18 @@ input::placeholder {
 @media (max-width: 640px) {
   .item-grid--credentials {
     grid-template-columns: 1fr;
+  }
+
+  .profile-header-row {
+    gap: 10px;
+  }
+
+  .profile-credential-header {
+    --profile-header-avatar-size: 56px;
+  }
+
+  .profile-page-avatar {
+    min-height: 56px;
   }
 
   .hero {
