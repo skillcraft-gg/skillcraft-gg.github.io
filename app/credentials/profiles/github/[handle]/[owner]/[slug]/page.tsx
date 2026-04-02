@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import AppShell from '../../../../../../../components/AppShell'
 import CredentialImageFallback from '../../../../../../../components/credentials/CredentialImageFallback'
+import CredentialRequirementsRenderer from '../../../../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../../../../components/seo/CredentialJsonLd'
 import { resolveCredentialImage } from '../../../../../../../components/credentials/credentialImageResolver'
 import {
@@ -274,22 +275,27 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
             </div>
 
             <div className="detail-action-row">
-              <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Credential definition</h2>
-                <ul className="detail-list detail-list--compact">
-                  <li><strong>Handle:</strong> @{profile.github}</li>
-                  <li><strong>Owner:</strong> {definition.owner || owner}</li>
+               <section className="panel detail-sidebar-panel">
+                 <h2 className="panel-title">Credential definition</h2>
+                 <ul className="detail-list detail-list--compact">
+                   <li><strong>Handle:</strong> @{profile.github}</li>
+                   <li><strong>Owner:</strong> {definition.owner || owner}</li>
                   <li><strong>Definition:</strong> {definition.id}</li>
                   <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
                   <li><strong>Issued:</strong> {issuedDate}</li>
-                  <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
-                </ul>
-              </section>
+                   <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
+                 </ul>
+               </section>
 
-              <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Evidence details</h2>
-                <ul className="detail-list detail-list--compact">
-                  <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
+               <section className="panel detail-sidebar-panel">
+                 <h2 className="panel-title">Requirements</h2>
+                 <CredentialRequirementsRenderer requirements={definition.requirements} />
+               </section>
+
+               <section className="panel detail-sidebar-panel">
+                 <h2 className="panel-title">Evidence details</h2>
+                 <ul className="detail-list detail-list--compact">
+                   <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
                   <li><strong>Referenced commits:</strong> {issued.sourceCommits.length}</li>
                 </ul>
 

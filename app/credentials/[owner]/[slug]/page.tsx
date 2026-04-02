@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import AppShell from '../../../../components/AppShell'
 import CredentialDetailSummaryPanel from '../../../../components/credentials/CredentialDetailSummaryPanel'
+import CredentialRequirementsRenderer from '../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../components/seo/CredentialJsonLd'
 import { resolveCredentialImage } from '../../../../components/credentials/credentialImageResolver'
 import {
@@ -142,14 +143,6 @@ const renderMetadataList = (entries: [string, unknown][]) => {
   )
 }
 
-const isDisplayableRequirements = (value: unknown) => {
-  if (value && typeof value === 'object') {
-    return Object.keys(value).length > 0
-  }
-
-  return Boolean(value)
-}
-
 export const generateStaticParams = async (): Promise<CredentialDetailParams[]> => {
   const credentials = await fetchCredentialIndex()
 
@@ -273,14 +266,10 @@ export default async function CredentialDetailPage({ params }: { params: Credent
                 </ul>
               </section>
 
-              <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Requirements</h2>
-                {isDisplayableRequirements(selected.requirements) ? (
-                  <pre className="metadata-json">{JSON.stringify(selected.requirements, null, 2)}</pre>
-                ) : (
-                  <p className="caption">No requirements were defined in the ledger.</p>
-                )}
-              </section>
+                <section className="panel detail-sidebar-panel">
+                  <h2 className="panel-title">Requirements</h2>
+                  <CredentialRequirementsRenderer requirements={selected.requirements} />
+                </section>
 
               <section className="panel detail-sidebar-panel">
                 <h2 className="panel-title">Index metadata</h2>
