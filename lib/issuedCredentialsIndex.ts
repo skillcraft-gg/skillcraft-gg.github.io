@@ -6,10 +6,16 @@ export type IssuedCredentialSummary = {
   issuedAt: string
   claimId: string
   sourceCommits: string[]
+  sources: IssuedCredentialSource[]
   subject: Record<string, unknown>
   path: string
   definitionOwner: string
   definitionSlug: string
+}
+
+export type IssuedCredentialSource = {
+  repo: string
+  commits: string[]
 }
 
 export type IssuedCredentialProfileMatch = {
@@ -76,6 +82,60 @@ const normalizeSourceCommits = (value: unknown): string[] => {
     .filter(Boolean)
 }
 
+const normalizeSourceRepo = (value: unknown): string => {
+  const normalized = normalize(value)
+  if (!normalized) {
+    return ''
+  }
+
+  const withoutProtocol = normalized
+    .replace(/^https?:\/\/github\.com\//i, '')
+    .replace(/^https?:\/\//i, '')
+    .replace(/^git@github\.com:/i, '')
+    .replace(/\/+$/g, '')
+    .replace(/\.git$/i, '')
+
+  if (!/^[a-z0-9-_.]+\/[a-z0-9-_.]+$/i.test(withoutProtocol)) {
+    return ''
+  }
+
+  return withoutProtocol.toLowerCase()
+}
+
+const normalizeSources = (value: unknown): IssuedCredentialSource[] => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  const grouped = new Map<string, string[]>()
+
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      continue
+    }
+
+    const repo = normalizeSourceRepo((entry as Record<string, unknown>).repo)
+    if (!repo) {
+      continue
+    }
+
+    const commits = normalizeSourceCommits((entry as Record<string, unknown>).commits)
+    if (commits.length === 0) {
+      continue
+    }
+
+    const existing = grouped.get(repo) || []
+    grouped.set(repo, existing.concat(commits))
+  }
+
+  return Array.from(grouped.entries())
+    .map(([repo, commits]) => ({
+      repo,
+      commits: Array.from(new Set(commits.map((entry) => normalize(entry)).filter(Boolean))),
+    }))
+    .filter((entry) => entry.repo && entry.commits.length > 0)
+}
+
 const parseIssuedCredential = (entry: unknown): IssuedCredentialSummary | null => {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
     return null
@@ -92,11 +152,20 @@ const parseIssuedCredential = (entry: unknown): IssuedCredentialSummary | null =
     ? raw.subject as Record<string, unknown>
     : {}
 
+  const sources = normalizeSources(raw.sources)
+  const sourceCommitsFromField = normalizeSourceCommits(raw.sourceCommits || raw.source_commits)
+  const sourceCommitsFromSources = sources.flatMap((entry) => entry.commits)
+  const sourceCommits = Array.from(new Set([
+    ...sourceCommitsFromField,
+    ...sourceCommitsFromSources,
+  ].filter(Boolean)))
+
   return {
     definition: definition.toLowerCase(),
     issuedAt: normalize(raw.issuedAt || raw.issued_at),
     claimId: normalize(raw.claimId || raw.claim_id),
-    sourceCommits: normalizeSourceCommits(raw.sourceCommits ?? raw.source_commits),
+    sourceCommits,
+    sources,
     subject,
     path: normalize(raw.path),
     definitionOwner: owner,

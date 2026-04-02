@@ -16,6 +16,7 @@ import {
   findIssuedCredentialForProfile,
   findIssuedProfile,
   fetchLiveIssuedCredentialsIndex,
+  type IssuedCredentialSource,
 } from '../../../../../../../lib/issuedCredentialsIndex'
 
 type IssuedCredentialDetailParams = {
@@ -102,64 +103,153 @@ const toRepositoryPath = (value: string) => {
   return repository.toLowerCase()
 }
 
-const buildCommitLines = (items: string[], fallbackRepository?: string) => {
+type CommitReference = {
+  commit: string
+  repo?: string
+}
+
+const normalizeCommitReference = (value: unknown): string => (value || '').toString().trim()
+
+const buildCommitReferences = (
+  sourceCommits: string[],
+  sources: IssuedCredentialSource[],
+  fallbackRepository?: string,
+) => {
+  const referenced: CommitReference[] = []
+  const seen = new Set<string>()
+
+  for (const source of sources || []) {
+    const repo = toRepositoryPath(source.repo || '')
+    if (!repo) {
+      continue
+    }
+
+    for (const commit of source.commits || []) {
+      const normalizedCommit = normalizeCommitReference(commit)
+      if (!normalizedCommit) {
+        continue
+      }
+
+      const key = `${repo}:${normalizedCommit}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        referenced.push({
+          commit: normalizedCommit,
+          repo,
+        })
+      }
+    }
+  }
+
+  if (referenced.length > 0) {
+    return referenced
+  }
+
+  const fallbackRepo = toRepositoryPath(fallbackRepository || '')
+  for (const commit of sourceCommits || []) {
+    const normalizedCommit = normalizeCommitReference(commit)
+    if (!normalizedCommit) {
+      continue
+    }
+
+    const key = `${fallbackRepo || 'search'}:${normalizedCommit}`
+    if (seen.has(key)) {
+      continue
+    }
+
+    seen.add(key)
+    referenced.push({
+      commit: normalizedCommit,
+      ...(fallbackRepo ? { repo: fallbackRepo } : {}),
+    })
+  }
+
+  return referenced
+}
+
+  const buildCommitLines = (items: CommitReference[]) => {
   if (!items || items.length === 0) {
     return <p className="caption">No source commits were referenced.</p>
   }
 
-  const defaultRepository = toRepositoryPath(fallbackRepository || '')
-
-  const getCommitLink = (entry: string) => {
-    const commit = entry.trim()
-    if (!commit) {
+  const commitLinkFromEntry = ({ commit, repo }: CommitReference) => {
+    const normalizedCommit = normalizeCommitReference(commit)
+    if (!normalizedCommit) {
       return null
     }
 
-    if (/^https?:\/\//.test(commit)) {
-      return commit
+    if (/^https?:\/\//i.test(normalizedCommit)) {
+      return normalizedCommit
     }
 
-    const ownerRepoWithAtSha = /^([a-z0-9-_.]+\/[a-z0-9-_.]+)@([0-9a-f]{7,40})$/i.exec(commit)
+    if (repo && /^[a-z0-9-_.]+\/[a-z0-9-_.]+$/.test(repo)) {
+      return `https://github.com/${repo}/commit/${normalizedCommit}`
+    }
+
+    const ownerRepoWithAtSha = /^([a-z0-9-_.]+\/[a-z0-9-_.]+)@([0-9a-f]{7,40})$/i.exec(normalizedCommit)
     if (ownerRepoWithAtSha) {
       return `https://github.com/${ownerRepoWithAtSha[1]}/commit/${ownerRepoWithAtSha[2]}`
     }
 
-    const commitOnly = /^[0-9a-f]{7,40}$/i.test(commit)
-    if (commitOnly) {
-      if (defaultRepository) {
-        return `https://github.com/${defaultRepository}/commit/${commit}`
-      }
-
-      return `https://github.com/search?q=${encodeURIComponent(commit)}&type=commits`
-    }
-
-    const maybePath = /(?:https:\/\/github\.com\/)?([a-z0-9-_.]+\/[a-z0-9-_.]+)(?:\/commit)?\/([0-9a-f]{7,40})(?:\/)?$/i.exec(commit)
+    const maybePath = /(?:https:\/\/github\.com\/)?([a-z0-9-_.]+\/[a-z0-9-_.]+)(?:\/commit)?\/([0-9a-f]{7,40})(?:\/)?$/i.exec(normalizedCommit)
     if (maybePath) {
       return `https://github.com/${maybePath[1]}/commit/${maybePath[2]}`
     }
 
-    const withRepoSuffix = /^([a-z0-9-_.]+\/[a-z0-9-_.]+):([0-9a-f]{7,40})$/i.exec(commit)
+    const withRepoSuffix = /^([a-z0-9-_.]+\/[a-z0-9-_.]+):([0-9a-f]{7,40})$/i.exec(normalizedCommit)
     if (withRepoSuffix) {
       return `https://github.com/${withRepoSuffix[1]}/commit/${withRepoSuffix[2]}`
+    }
+
+    const commitOnly = /^[0-9a-f]{7,40}$/i.test(normalizedCommit)
+    if (commitOnly) {
+      return `https://github.com/search?q=${encodeURIComponent(normalizedCommit)}&type=commits`
     }
 
     return null
   }
 
+  const buildProofLinkFromEntry = ({ commit, repo }: CommitReference) => {
+    if (!repo) {
+      return null
+    }
+
+    const normalizedCommit = normalizeCommitReference(commit)
+    if (!normalizedCommit) {
+      return null
+    }
+
+    return `https://github.com/${repo}/search?q=${encodeURIComponent(`${normalizedCommit} path:proofs`)}&type=code`
+  }
+
   return (
     <ul className="detail-list detail-list--compact">
       {items.map((entry, index) => (
-        <li key={`${entry}-${index}`}>
+        <li key={`${entry.commit}-${index}`}>
           {(() => {
-            const href = getCommitLink(entry)
+            const href = commitLinkFromEntry(entry)
             if (!href) {
-              return <span>{entry}</span>
+              return <span>{entry.commit}</span>
             }
 
             return (
-            <a href={href} target="_blank" rel="noreferrer">
-              {entry}
-            </a>
+              <a href={href} target="_blank" rel="noreferrer">
+                {entry.commit}
+              </a>
+            )
+          })()}
+          {entry.repo ? <span className="caption"> from {entry.repo}</span> : null}
+          {(() => {
+            const proofLink = buildProofLinkFromEntry(entry)
+            if (!proofLink) {
+              return null
+            }
+
+            return (
+              <span className="caption">
+                {' '}-{' '}
+                <a href={proofLink} target="_blank" rel="noreferrer">Proof</a>
+              </span>
             )
           })()}
         </li>
@@ -295,6 +385,11 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const issuedDate = formatIssuedDate(issued.issuedAt)
   const jsonLdSummary = buildJsonLdSummary(definition, issuedDate, issued.claimId)
   const imageUrl = resolveCredentialImage(definition)
+  const commitReferences = buildCommitReferences(
+    issued.sourceCommits,
+    issued.sources,
+    `${definition.owner}/${definition.slug}`,
+  )
 
   return (
     <>
@@ -340,18 +435,18 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                 <p className="caption">{`Claim ID: ${issued.claimId || 'not provided'}`}</p>
               </div>
 
-              <section className="detail-summary">
+                <section className="detail-summary">
                 <h2 className="panel-title">Evidence details</h2>
-                <ul className="detail-list detail-list--compact">
-                  <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
-                  <li><strong>Referenced commits:</strong> {issued.sourceCommits.length}</li>
-                </ul>
+                  <ul className="detail-list detail-list--compact">
+                    <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
+                    <li><strong>Referenced commits:</strong> {commitReferences.length}</li>
+                  </ul>
 
                 <p className="panel-title" style={{ marginTop: '1rem' }}>Subject payload</p>
                 <pre className="metadata-json">{stringifySubject(issued.subject)}</pre>
 
                 <h2 className="panel-title">Source commits</h2>
-                {buildCommitLines(issued.sourceCommits, `${definition.owner}/${definition.slug}`)}
+                {buildCommitLines(commitReferences)}
               </section>
             </div>
             <div className="detail-action-row">
