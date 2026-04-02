@@ -6,7 +6,10 @@ import AppShell from '../../../../../../../components/AppShell'
 import CredentialImageFallback from '../../../../../../../components/credentials/CredentialImageFallback'
 import CredentialRequirementsRenderer from '../../../../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../../../../components/seo/CredentialJsonLd'
-import { resolveCredentialImage } from '../../../../../../../components/credentials/credentialImageResolver'
+import {
+  resolveCredentialImage,
+  CREDENTIAL_IMAGE_PLACEHOLDER,
+} from '../../../../../../../components/credentials/credentialImageResolver'
 import {
   findCredentialByPath,
   fetchCredentialIndex,
@@ -26,6 +29,10 @@ type IssuedCredentialDetailParams = {
 }
 
 const BASE_URL = 'https://skillcraft.gg'
+const SOCIAL_IMAGE_FALLBACK = '/images/og-home.jpg'
+const SOCIAL_IMAGE_FALLBACK_WIDTH = 1200
+const SOCIAL_IMAGE_FALLBACK_HEIGHT = 630
+const SEO_DESCRIPTION_TARGET = 155
 
 const buildCanonical = (handle: string, owner: string, slug: string) => (
   `/credentials/profiles/github/${handle}/${owner}/${slug}/`
@@ -48,7 +55,50 @@ const formatIssuedDate = (value: string) => {
   })
 }
 
+const normalizeIssuedDateIso = (value: string) => {
+  const parsed = Date.parse(value)
+  if (Number.isNaN(parsed)) {
+    return ''
+  }
+
+  return new Date(parsed).toISOString()
+}
+
 const normalize = (value: string): string => (value || '').trim()
+
+const formatHandleLabel = (handle: string) => {
+  const normalized = normalize(handle)
+  return normalized ? (normalized.startsWith('@') ? normalized : `@${normalized}`) : 'a verified holder'
+}
+
+const buildSourceSummary = (items: CommitReference[]) => {
+  if (!items || items.length === 0) {
+    return 'No verified source commits were published.'
+  }
+
+  const repoCounts = items.reduce((carry, entry) => {
+    if (!entry.repo) {
+      return carry
+    }
+
+    carry[entry.repo] = (carry[entry.repo] || 0) + 1
+    return carry
+  }, {} as Record<string, number>)
+
+  const topEntry = Object.entries(repoCounts).sort((left, right) => {
+    const [, leftCount] = left
+    const [, rightCount] = right
+    return rightCount - leftCount
+  })[0]
+
+  if (!topEntry) {
+    return `${items.length} commits were recorded for this credential.`
+  }
+
+  const [repo, count] = topEntry
+  const suffix = count === 1 ? 'commit' : 'commits'
+  return `${count} ${suffix} verified in ${repo}.`
+}
 
 const fallbackCredential = (owner: string, slug: string, issuedDefinition: string, issuedAt: string): CredentialDefinition => ({
   id: issuedDefinition,
@@ -64,21 +114,68 @@ const fallbackCredential = (owner: string, slug: string, issuedDefinition: strin
   indexMetadata: {},
 })
 
-const buildMetaDescription = (definition: CredentialDefinition, issuedAt: string, handle: string, claimId: string) => {
+const buildMetaDescription = (
+  definition: CredentialDefinition,
+  issuedAt: string,
+  handle: string,
+  claimId: string,
+  sourceSummary: string,
+) => {
   const issued = formatIssuedDate(issuedAt)
-  if (claimId) {
-    return `${definition.name} was issued to ${handle} on ${issued} (claim ${claimId}).`
+  const holder = formatHandleLabel(handle)
+  const claimClause = claimId ? ` Claim ID ${claimId}.` : ''
+  const base = `${definition.name} was issued to ${holder} on ${issued}.${claimClause}`
+  const sourceClause = sourceSummary ? ` ${sourceSummary}` : ''
+  const candidate = `${base}${sourceClause}`
+
+  if (candidate.length <= SEO_DESCRIPTION_TARGET) {
+    return candidate
   }
 
-  return `${definition.name} was issued to ${handle} on ${issued}.`
+  if (candidate.length > SEO_DESCRIPTION_TARGET) {
+    const compactClaim = claimId ? ` Claim ${claimId.slice(0, 12)}.` : ''
+    const compact = `${definition.name} issued to ${holder} on ${issued}.${compactClaim}${sourceClause}`
+    return compact.length <= SEO_DESCRIPTION_TARGET ? compact : compact.slice(0, SEO_DESCRIPTION_TARGET)
+  }
+
+  return candidate.slice(0, SEO_DESCRIPTION_TARGET)
 }
 
-const buildJsonLdSummary = (definition: CredentialDefinition, issuedDate: string, claimId: string) => {
-  if (claimId) {
-    return `${definition.name} includes claim ${claimId} issued on ${issuedDate}.`
+const buildMetaTitle = (definition: CredentialDefinition, handle: string) => {
+  const holder = formatHandleLabel(handle)
+  return `${definition.name} issued to ${holder} | Skillcraft Credential Evidence`
+}
+
+const buildMetaImage = (definition: CredentialDefinition, handle: string, sourceSummary: string) => {
+  const resolved = resolveCredentialImage(definition)
+  if (resolved && resolved !== CREDENTIAL_IMAGE_PLACEHOLDER) {
+    return {
+      url: resolved,
+      alt: `${definition.name} issued to ${formatHandleLabel(handle)}${sourceSummary ? ` · ${sourceSummary}` : ''}`,
+    }
   }
 
-  return `${definition.name} was issued on ${issuedDate}.`
+  return {
+    url: SOCIAL_IMAGE_FALLBACK,
+    width: SOCIAL_IMAGE_FALLBACK_WIDTH,
+    height: SOCIAL_IMAGE_FALLBACK_HEIGHT,
+    alt: `${definition.name} issued credential detail`,
+  }
+}
+
+const buildJsonLdSummary = (
+  definition: CredentialDefinition,
+  issuedDate: string,
+  claimId: string,
+  handle: string,
+) => {
+  const holder = formatHandleLabel(handle)
+
+  if (claimId) {
+    return `${definition.name} includes claim ${claimId} issued to ${holder} on ${issuedDate}.`
+  }
+
+  return `${definition.name} was issued to ${holder} on ${issuedDate}.`
 }
 
 const stringifySubject = (subject: unknown) => {
@@ -167,7 +264,7 @@ const buildCommitReferences = (
   return referenced
 }
 
-  const buildCommitLines = (items: CommitReference[]) => {
+const buildCommitLines = (items: CommitReference[]) => {
   if (!items || items.length === 0) {
     return <p className="caption">No source commits were referenced.</p>
   }
@@ -330,10 +427,25 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
 
   const credentialForMeta = definitionFromLedger
     || fallbackCredential(owner, slug, issued.definition, issued.issuedAt)
-  const summary = buildMetaDescription(credentialForMeta, issued.issuedAt, handle, issued.claimId)
+  const commitReferences = buildCommitReferences(
+    issued.sourceCommits,
+    issued.sources,
+    `${credentialForMeta.owner}/${credentialForMeta.slug}`,
+  )
+  const sourceSummary = buildSourceSummary(commitReferences)
+  const summary = buildMetaDescription(
+    credentialForMeta,
+    issued.issuedAt,
+    handle,
+    issued.claimId,
+    sourceSummary,
+  )
+  const title = buildMetaTitle(credentialForMeta, handle)
+  const metaImage = buildMetaImage(credentialForMeta, handle, sourceSummary)
+  const publishedTime = normalizeIssuedDateIso(issued.issuedAt)
 
   return {
-    title: `${credentialForMeta.name} | Skillcraft Credential Evidence`,
+    title,
     description: summary,
     alternates: {
       canonical,
@@ -341,22 +453,29 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
     openGraph: {
       type: 'article',
       url: canonical,
-      title: `${credentialForMeta.name} | Skillcraft Credential Evidence`,
+      title,
       description: summary,
       images: [
         {
-          url: '/images/og-home.jpg',
-          width: 1200,
-          height: 630,
-          alt: `${credentialForMeta.name} issued credential detail`,
+          url: metaImage.url,
+          ...(metaImage.width ? { width: metaImage.width } : {}),
+          ...(metaImage.height ? { height: metaImage.height } : {}),
+          alt: metaImage.alt,
         },
       ],
+      ...(publishedTime ? { publishedTime } : {}),
+      section: 'Issued Credentials',
+      tags: [
+        credentialForMeta.owner,
+        credentialForMeta.slug,
+        handle,
+      ].filter(Boolean),
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${credentialForMeta.name} | Skillcraft Credential Evidence`,
+      title,
       description: summary,
-      images: ['/images/og-home.jpg'],
+      images: [metaImage.url],
     },
   }
 }
@@ -383,17 +502,30 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
     || fallbackCredential(owner, slug, issued.definition, issued.issuedAt)
 
   const issuedDate = formatIssuedDate(issued.issuedAt)
-  const jsonLdSummary = buildJsonLdSummary(definition, issuedDate, issued.claimId)
-  const imageUrl = resolveCredentialImage(definition)
   const commitReferences = buildCommitReferences(
     issued.sourceCommits,
     issued.sources,
     `${definition.owner}/${definition.slug}`,
   )
+  const sourceSummary = buildSourceSummary(commitReferences)
+  const jsonLdSummary = buildJsonLdSummary(definition, issuedDate, issued.claimId, handle)
+  const imageUrl = resolveCredentialImage(definition)
 
   return (
     <>
-      <CredentialJsonLd credential={definition} canonicalUrl={`${BASE_URL}${buildCanonical(handle, owner, slug)}`} summary={jsonLdSummary} />
+      <CredentialJsonLd
+        credential={definition}
+        canonicalUrl={`${BASE_URL}${buildCanonical(handle, owner, slug)}`}
+        summary={jsonLdSummary}
+        issued={{
+          issuedDate: issued.issuedAt,
+          holder: handle,
+          claimId: issued.claimId,
+          sourceRepo: commitReferences[0]?.repo,
+          sourceCommitCount: commitReferences.length,
+          sourceSummary,
+        }}
+      />
 
       <AppShell
         title={`Credential / ${profile.github}`}
