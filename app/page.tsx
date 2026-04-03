@@ -52,6 +52,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const skillCount = await getSkillRegistryCount()
   const credentialCount = await getCredentialDefinitionCount()
+  const currentYear = new Date().getFullYear()
 
   return (
       <AppShell
@@ -228,44 +229,142 @@ export default async function HomePage() {
               </div>
             </section>
 
-          <section className="whitepaper-block">
-            <h2 className="tagline">
-              From AI output to verifiable capability.
-            </h2>
-            <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
-              Output is easy. Reliable proof is not. The Skillcraft ecosystem binds AI work to verifiable git artifacts and issues credentials only after deterministic verification.
-            </p>
-            <section className="whitepaper-feature">
-              <section className="section whitepaper-promo">
-                <div className="whitepaper-copy-column">
-                  <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
-                  <p className="whitepaper-copy">
-                    Skillcraft turns everyday commit history into auditable proof. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
-                  </p>
-                  <div className="cta-row">
+            <section className="whitepaper-block">
+              <h2 className="tagline">
+                From AI output to verifiable capability.
+              </h2>
+              <p className="workflow-copy" role="text" aria-label="Whitepaper follow-up">
+                Output is easy. Reliable proof is not. The Skillcraft ecosystem binds AI work to verifiable git artifacts and issues credentials only after deterministic verification.
+              </p>
+              <section className="whitepaper-feature">
+                <section className="section whitepaper-promo">
+                  <div className="whitepaper-copy-column">
+                    <h3 className="whitepaper-box-title">Skillcraft Ecosystem Whitepaper</h3>
+                    <p className="whitepaper-copy">
+                      Skillcraft turns everyday commit history into auditable proof. Read the Skillcraft whitepaper to see the technical details of how this is achieved.
+                    </p>
+                    <div className="cta-row">
+                      <a
+                        className="btn btn-secondary"
+                        href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Download Whitepaper
+                      </a>
+                    </div>
+                  </div>
+                  <a
+                    className="whitepaper-simple-link"
+                    href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open Skillcraft whitepaper PDF"
+                  >
+                    <img className="whitepaper-image" src="/images/whitepaper-page-1.png" alt="Skillcraft whitepaper front page" />
+                  </a>
+                </section>
+              </section>
+            </section>
+          </section>
+
+          <footer className="landing-footer" aria-label="Landing page footer">
+            <hr className="landing-footer-rule" />
+            <div className="landing-footer-grid">
+              <section className="landing-footer-col landing-footer-brand">
+                <img src="/images/logo.png" alt="Skillcraft" className="landing-footer-logo" width={190} height={38} />
+                <p className="landing-footer-copy">
+                  Build, prove, and verify your AI coding skills.
+                </p>
+              </section>
+
+              <section className="landing-footer-col">
+                <p className="landing-footer-title">Community</p>
+                <ul className="landing-footer-links">
+                  <li>
                     <a
-                      className="btn btn-secondary"
+                      className="landing-footer-link landing-footer-link--strong"
+                      href="https://github.com/skillcraft-gg/skillcraft"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="landing-footer-link landing-footer-link--strong"
+                      href="https://www.linkedin.com/company/skillcraft-gg/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      LinkedIn
+                    </a>
+                  </li>
+                </ul>
+              </section>
+
+              <section className="landing-footer-col">
+                <p className="landing-footer-title">Explore</p>
+                <ul className="landing-footer-links">
+                  <li><Link className="landing-footer-link" href="/">Home</Link></li>
+                  <li><Link className="landing-footer-link" href="/skills">Skills</Link></li>
+                  <li><Link className="landing-footer-link" href="/loadouts">Loadouts</Link></li>
+                  <li><Link className="landing-footer-link" href="/credentials">Credentials</Link></li>
+                </ul>
+              </section>
+
+              <section className="landing-footer-col">
+                <p className="landing-footer-title">Docs</p>
+                <ul className="landing-footer-links">
+                  <li>
+                    <a className="landing-footer-link" href="https://skillcraft.gg/docs">Docs Home</a>
+                  </li>
+                  <li>
+                    <a className="landing-footer-link" href="https://skillcraft.gg/docs/getting-started">Getting Started</a>
+                  </li>
+                  <li>
+                    <a className="landing-footer-link" href="https://skillcraft.gg/docs/installation">Installation</a>
+                  </li>
+                  <li>
+                    <a className="landing-footer-link" href="https://skillcraft.gg/docs/reference/cli">CLI</a>
+                  </li>
+                  <li>
+                    <a className="landing-footer-link" href="https://skillcraft.gg/docs/reference/vcs-integrations/github">GitHub Integration</a>
+                  </li>
+                </ul>
+              </section>
+
+              <section className="landing-footer-col">
+                <p className="landing-footer-title">Proof in Action</p>
+                <ul className="landing-footer-links">
+                  <li>
+                    <Link className="landing-footer-link" href="/credentials/skillcraft-gg/hello-world">Hello World</Link>
+                  </li>
+                  <li>
+                    <Link className="landing-footer-link" href="/credentials/skillcraft-gg/opencode-practitioner">Opencode Practitioner</Link>
+                  </li>
+                  <li>
+                    <a
+                      className="landing-footer-link"
                       href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Download Whitepaper
+                      Whitepaper
                     </a>
-                  </div>
-                </div>
-                <a
-                  className="whitepaper-simple-link"
-                  href="https://skillcraft.gg/whitepaper/skillcraft.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Open Skillcraft whitepaper PDF"
-                >
-                  <img className="whitepaper-image" src="/images/whitepaper-page-1.png" alt="Skillcraft whitepaper front page" />
-                </a>
+                  </li>
+                </ul>
               </section>
-            </section>
-          </section>
-      </section>
-    </AppShell>
+            </div>
+
+            <div className="landing-footer-meta">
+               <p>© {currentYear} Skillcraft.</p>
+              <a className="landing-footer-link" href="https://skillcraft.gg/docs/tutorials/first-credential">
+                First credential tutorial
+              </a>
+            </div>
+          </footer>
+      </AppShell>
   )
 }

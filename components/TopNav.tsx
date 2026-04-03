@@ -21,9 +21,12 @@ export default function TopNav({ activePath = '/' }: TopNavProps) {
                 key={route.label}
                 className="top-tab is-disabled"
                 aria-disabled="true"
-                title="Coming soon"
+                title={route.badge || 'Coming soon'}
               >
                 {route.label}
+                {route.badge ? (
+                  <span className="top-tab-pill">{route.badge}</span>
+                ) : null}
               </span>
             )
           }
