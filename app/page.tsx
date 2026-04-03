@@ -159,12 +159,12 @@ export default async function HomePage() {
                       <span className="cmd">skillcraft</span> <span className="arg">skills add anthropic/frontend-design</span>
                     </span>
                   </div>
-                  <div className="line">
-                    <span className="prompt">$</span>
-                    <span>
-                      opencode <span className="arg">run "build my landing page"</span>
-                    </span>
-                  </div>
+                <div className="line">
+                  <span className="prompt">$</span>
+                  <span>
+                    opencode <span className="arg">run</span> <span className="str">"build my landing page"</span>
+                  </span>
+                </div>
                 </div>
               </section>
               <div className="cta-row">
