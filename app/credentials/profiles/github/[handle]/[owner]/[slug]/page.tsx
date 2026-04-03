@@ -143,7 +143,7 @@ const buildMetaDescription = (
 
 const buildMetaTitle = (definition: CredentialDefinition, handle: string) => {
   const holder = formatHandleLabel(handle)
-  return `${definition.name} issued to ${holder} | Skillcraft Credential Evidence`
+  return `${definition.name} issued to ${holder} | Prove your AI skills at Skillcraft.gg`
 }
 
 const buildMetaImage = (definition: CredentialDefinition, handle: string, sourceSummary: string) => {
