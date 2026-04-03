@@ -97,7 +97,7 @@ export default async function HomePage() {
             Use your favourite AI coding agents and let Skillcraft turn your commits into verifiable evidence. When you have enough, use it to claim credentials and build a profile that reflects demonstrated capability.
           </p>
 
-           <section className="terminal">
+            <section className="terminal terminal--focus" data-terminal="initial">
             <div className="terminal-top">
               <div className="dots">
                 <span />
@@ -124,13 +124,13 @@ export default async function HomePage() {
                   <span className="cmd">skillcraft</span> <span className="arg">progress</span>
                 </span>
               </div>
-                <div className="line">
-                  <span className="prompt">$</span>
-                  <span>
-                   <span className="cmd">skillcraft</span> <span className="arg">claim</span> <span className="path">skillcraft-gg/hello-world</span>
-                   <span className="cursor" aria-hidden="true" />
-                   </span>
-                 </div>
+              <div className="line">
+                <span className="prompt">$</span>
+                <span>
+                  <span className="cmd">skillcraft</span> <span className="arg">claim</span> <Link className="path path-underline" href="/credentials/skillcraft-gg/hello-world">skillcraft-gg/hello-world</Link>
+                  <span className="cursor" aria-hidden="true" />
+                </span>
+              </div>
              </div>
            </section>
               <div className="cta-row">
@@ -144,7 +144,7 @@ export default async function HomePage() {
               <p className="workflow-copy" role="text" aria-label="Credential verification workflow">
                 Track a credential, push your work, and verify. This creates a trustable trail that proves what your AI-assisted coding actually accomplishes.
               </p>
-              <section className="terminal">
+               <section className="terminal" data-terminal="credentials">
                 <div className="terminal-top">
                   <div className="dots">
                     <span />
@@ -156,19 +156,20 @@ export default async function HomePage() {
                   <div className="line">
                     <span className="prompt">$</span>
                     <span>
-                       <span className="cmd">skillcraft</span> <span className="arg">progress track</span> <span className="path">skillcraft-gg/opencode-practitioner</span>
+                       <span className="cmd">skillcraft</span> <span className="arg">progress track</span> <Link className="path path-underline" href="/credentials/skillcraft-gg/opencode-practitioner">skillcraft-gg/opencode-practitioner</Link>
                     </span>
                   </div>
                   <div className="line">
                     <span className="prompt">$</span>
                     <span>
-                      <span className="cmd">git</span> <span className="arg">push</span>
+                      <span className="arg">git push</span>
                     </span>
                   </div>
                   <div className="line">
                     <span className="prompt">$</span>
                     <span>
                       <span className="cmd">skillcraft</span> <span className="arg">verify</span>
+                      <span className="cursor" aria-hidden="true" />
                     </span>
                   </div>
                 </div>
@@ -184,7 +185,7 @@ export default async function HomePage() {
               <p className="workflow-copy" role="text" aria-label="Skills registry workflow">
                 Equip your coding agent with the right skill for the task, in seconds. Search by need, inspect the source, and install it with one command.
               </p>
-              <section className="terminal">
+               <section className="terminal" data-terminal="skills">
                 <div className="terminal-top">
                   <div className="dots">
                     <span />
@@ -199,22 +200,23 @@ export default async function HomePage() {
                       <span className="cmd">skillcraft</span> <span className="arg">skills search design</span>
                     </span>
                   </div>
-                  <div className="line">
-                    <span className="prompt">$</span>
-                    <span>
-                      <span className="cmd">skillcraft</span> <span className="arg">skills inspect anthropic/frontend-design</span>
-                    </span>
-                  </div>
-                  <div className="line">
-                    <span className="prompt">$</span>
-                    <span>
-                      <span className="cmd">skillcraft</span> <span className="arg">skills add anthropic/frontend-design</span>
-                    </span>
-                  </div>
+                <div className="line">
+                  <span className="prompt">$</span>
+                  <span>
+                    <span className="cmd">skillcraft</span> <span className="arg">skills inspect</span> <Link className="path path-underline" href="/skills/anthropic/frontend-design">anthropic/frontend-design</Link>
+                  </span>
+                </div>
+                <div className="line">
+                  <span className="prompt">$</span>
+                  <span>
+                    <span className="cmd">skillcraft</span> <span className="arg">skills add</span> <Link className="path path-underline" href="/skills/anthropic/frontend-design">anthropic/frontend-design</Link>
+                  </span>
+                </div>
                 <div className="line">
                   <span className="prompt">$</span>
                   <span>
                     opencode <span className="arg">run</span> <span className="str">"build my landing page"</span>
+                    <span className="cursor" aria-hidden="true" />
                   </span>
                 </div>
                 </div>

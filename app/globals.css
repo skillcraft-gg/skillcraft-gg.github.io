@@ -837,6 +837,20 @@ h4 {
   overflow: hidden;
 }
 
+.terminal .cursor {
+  display: none;
+}
+
+.terminal--focus .cursor,
+.terminal:hover .cursor,
+.terminal:focus-within .cursor {
+  display: inline-block;
+}
+
+.how-it-works:hover .terminal--focus:not(:hover) .cursor {
+  display: none;
+}
+
 .is-initial-load-motion .terminal {
   animation: fadeUp 1100ms ease both;
   animation-delay: 180ms;
@@ -932,6 +946,16 @@ h4 {
 
 .path {
   color: rgba(255,255,255,0.88);
+}
+
+.path-underline {
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.7);
+  text-underline-offset: 2px;
+}
+
+.path-underline:hover {
+  text-decoration-style: double;
 }
 
 .cursor {
