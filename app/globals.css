@@ -772,6 +772,12 @@ h4 {
   height: 18px;
 }
 
+.btn-icon.npm-icon {
+  width: 20px;
+  height: 8px;
+  padding-top: 1px;
+}
+
 .btn-icon svg {
   width: 100%;
   height: 100%;
@@ -1249,6 +1255,36 @@ h4 {
   line-height: 1.35;
   transition: color 160ms ease, transform 160ms ease;
   width: max-content;
+}
+
+.landing-footer-link-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: inherit;
+  font-size: 0;
+  flex: 0 0 auto;
+}
+
+.landing-footer-link-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.landing-footer-link-icon--social {
+  width: 16px;
+  height: 16px;
+}
+
+.landing-footer-link-icon.npm-icon {
+  width: 16px;
+  height: 16px;
+  filter: grayscale(1) saturate(0) brightness(0.88);
 }
 
 .landing-footer-link::after {
