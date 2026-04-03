@@ -53,9 +53,9 @@ export const metadata: Metadata = {
     images: ['/images/og-home.jpg'],
   },
   icons: {
-    icon: '/images/skillcraft-icon-zoom.png',
-    shortcut: '/images/skillcraft-icon-zoom.png',
-    apple: '/images/skillcraft-icon-zoom.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/images/skillcraft-stripes.png',
   },
 }
 
@@ -67,9 +67,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetBrains.variable}`}>
       <head>
-        <link rel="icon" href="/images/skillcraft-icon-zoom.png" />
-        <link rel="shortcut icon" href="/images/skillcraft-icon-zoom.png" />
-        <link rel="apple-touch-icon" href="/images/skillcraft-icon-zoom.png" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/images/skillcraft-stripes.png" />
       </head>
       <body>
         <RouteMotionGate />
