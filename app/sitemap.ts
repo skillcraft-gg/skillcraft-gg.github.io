@@ -3,6 +3,7 @@ import type { MetadataRoute } from 'next'
 import { fetchSkillIndex } from '../lib/skillIndex'
 import { fetchCredentialIndex } from '../lib/credentialIndex'
 import { fetchIssuedCredentialsIndex } from '../lib/issuedCredentialsIndex'
+import { getAllNewsPosts } from '../lib/newsPosts'
 
 const BASE_URL = 'https://skillcraft.gg'
 
@@ -19,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const skills = await fetchSkillIndex()
   const credentials = await fetchCredentialIndex()
   const issuedProfiles = await fetchIssuedCredentialsIndex()
+  const newsPosts = await getAllNewsPosts()
 
   const issuedRoutes = issuedProfiles.flatMap((profile) =>
     profile.credentials.map((credential) => ({
@@ -69,6 +71,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       priority: 0.8,
     },
+    {
+      url: `${BASE_URL}/news`,
+      lastModified: new Date(),
+      priority: 0.75,
+    },
+    ...newsPosts.map((post) => ({
+      url: `${BASE_URL}/news/${post.slug}/`,
+      lastModified: parseLastModified(post.date) || new Date(),
+      priority: 0.7,
+    })),
     ...profileRoutes,
     ...uniqueIssued,
   ]

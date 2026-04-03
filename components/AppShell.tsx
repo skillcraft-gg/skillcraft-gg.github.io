@@ -10,6 +10,7 @@ type AppShellProps = {
   activePath?: string
   sidebar?: ReactNode
   children: ReactNode
+  beforeContent?: ReactNode
   inspector?: ReactNode
   copyClassName?: string
   fullBleed?: boolean
@@ -21,6 +22,7 @@ export default function AppShell({
   activePath = '/',
   sidebar,
   children,
+  beforeContent,
   inspector,
   copyClassName = '',
   fullBleed = false,
@@ -28,6 +30,7 @@ export default function AppShell({
 }: AppShellProps) {
   const hasSidebar = typeof sidebar !== 'undefined' && sidebar !== null
   const hasInspector = typeof inspector !== 'undefined' && inspector !== null
+  const hasLaunchBanner = heroClassName.split(' ').includes('hero-with-launch-banner')
 
   return (
     <CursorBias>
@@ -53,8 +56,10 @@ export default function AppShell({
         <div className="noise"></div>
         <div className="vignette"></div>
 
+        {beforeContent ? beforeContent : null}
+
         <div className={`shell${fullBleed ? ' shell--wide' : ''}`}>
-          <TopNav activePath={activePath} />
+          <TopNav activePath={activePath} launchBannerOffset={hasLaunchBanner} />
 
           <div className={`content${!hasSidebar && !hasInspector ? ' content--single' : ''}${fullBleed ? ' content--wide' : ''}`}>
             <div className={`copy${copyClassName ? ` ${copyClassName}` : ''} font-fade`}>

@@ -89,7 +89,7 @@ export default function IssuedCredentialList({ handle, credentials, definitions 
                     <p className="skill-meta-text">Claim ID: {credential.claimId}</p>
                   ) : null}
                 </div>
-                <span className="tag" aria-hidden="true">View issued detail</span>
+                <span className="tag" aria-hidden="true">Verify Credential</span>
               </Link>
             </article>
           )

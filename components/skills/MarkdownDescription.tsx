@@ -278,6 +278,13 @@ const buildMarkdownBlocks = (content: string): ReactNode[] => {
       continue
     }
 
+    const emDashBarMatch = /^\s*⸻+\s*$/.exec(line)
+    if (emDashBarMatch) {
+      flushAll()
+      blocks.push(<hr key={`hr-emdash-${keySeed++}`} />)
+      continue
+    }
+
     const bulletMatch = /^\s*[-*+]\s+(.*)$/.exec(line)
     const orderedMatch = /^\s*\d+\.\s+(.*)$/.exec(line)
 
