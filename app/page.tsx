@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import AppShell from '../components/AppShell'
+import { fetchCredentialIndex } from '../lib/credentialIndex'
 
 const SKILLS_REGISTRY_INDEX_URL = 'https://skillcraft.gg/skills-registry/search/index.json'
 const SKILL_COUNT_FALLBACK = '__'
+const CREDENTIAL_COUNT_FALLBACK = '__'
 
 const getSkillRegistryCount = async () => {
   try {
@@ -31,6 +33,15 @@ const getSkillRegistryCount = async () => {
   }
 }
 
+const getCredentialDefinitionCount = async () => {
+  try {
+    const credentials = await fetchCredentialIndex()
+    return `${credentials.length}`
+  } catch {
+    return CREDENTIAL_COUNT_FALLBACK
+  }
+}
+
 export const dynamic = 'force-static'
 export const revalidate = 3600
 
@@ -40,6 +51,7 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const skillCount = await getSkillRegistryCount()
+  const credentialCount = await getCredentialDefinitionCount()
 
   return (
       <AppShell
@@ -77,9 +89,9 @@ export default async function HomePage() {
         </a>
       </div>
         <p className="tagline">
-          Building is no longer the
-          <span className="accent"> constraint.</span>
-        </p>
+           Building is no longer <span className="accent">the </span>
+           <span className="accent">constraint.</span>
+         </p>
         <section className="how-it-works" id="get-started">
           <p className="workflow-copy" role="text" aria-label="How it works">
             Use your favourite AI coding agents and let Skillcraft turn your commits into verifiable evidence. When you have enough, use it to claim credentials and build a profile that reflects demonstrated capability.
@@ -121,14 +133,54 @@ export default async function HomePage() {
                  </div>
              </div>
            </section>
-             <div className="cta-row">
-               <Link className="btn btn-secondary" href="/docs">
-                 View Installation Docs
-               </Link>
-             </div>
+              <div className="cta-row">
+                <Link className="btn btn-secondary" href="/docs">
+                  View Installation Docs
+                </Link>
+              </div>
               <p className="tagline">
-                A skills registry at your fingertips.
+                Prove your AI coding skills with confidence.
               </p>
+              <p className="workflow-copy" role="text" aria-label="Credential verification workflow">
+                Track a credential, push your work, and verify. This creates a trustable trail that proves what your AI-assisted coding actually accomplishes.
+              </p>
+              <section className="terminal">
+                <div className="terminal-top">
+                  <div className="dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </div>
+                <div className="code" role="text" aria-label="credential verification terminal example output">
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                       <span className="cmd">skillcraft</span> <span className="arg">progress track</span> <span className="path">skillcraft-gg/opencode-practitioner</span>
+                    </span>
+                  </div>
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      <span className="cmd">git</span> <span className="arg">push</span>
+                    </span>
+                  </div>
+                  <div className="line">
+                    <span className="prompt">$</span>
+                    <span>
+                      <span className="cmd">skillcraft</span> <span className="arg">verify</span>
+                    </span>
+                  </div>
+                </div>
+              </section>
+              <div className="cta-row">
+                <Link className="btn btn-secondary" href="/credentials">
+                  View {credentialCount} Credentials
+                </Link>
+              </div>
+               <p className="tagline">
+                 A skills registry at your fingertips.
+               </p>
               <p className="workflow-copy" role="text" aria-label="Skills registry workflow">
                 Equip your coding agent with the right skill for the task, in seconds. Search by need, inspect the source, and install it with one command.
               </p>
