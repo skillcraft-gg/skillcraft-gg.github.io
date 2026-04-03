@@ -58,6 +58,23 @@ const buildIssuedCountPhrase = (issuedCount: number) => {
   return `${issuedCount} credentials`
 }
 
+const buildProfileIssuedCountPhrase = (issuedCount: number) => {
+  if (issuedCount <= 0) {
+    return 'no issued credentials'
+  }
+
+  if (issuedCount === 1) {
+    return '1 issued credential'
+  }
+
+  return `${issuedCount} issued credentials`
+}
+
+const buildProfileMetaTitle = (handle: string, issuedCount: number) => {
+  const issuedCountText = buildProfileIssuedCountPhrase(issuedCount)
+  return `${handle} has ${issuedCountText} | Prove your AI skills at Skillcraft.gg`
+}
+
 const getMostRecentCredentialName = (definitionMap: Record<string, CredentialDefinition>, definition: string, owner: string, slug: string) => {
   const mappedDefinition = definitionMap[definition] || definitionMap[`${owner}/${slug}`]
 
@@ -192,7 +209,7 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
   }
 
   const [latest] = profile.credentials
-  const latestSummary = latest
+    const latestSummary = latest
     ? buildLatestProfileCredentialSummary(
       definitionMap,
       latest.definition,
@@ -204,33 +221,36 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
     )
     : ''
 
-  const description = buildMetaDescription(profile.github, count, latestSummary)
-  const metaImage = latest
-    ? buildProfileMetaImage(
-      profile.github,
-      definitionMap,
-      latest.definition,
+   const description = buildMetaDescription(profile.github, count, latestSummary)
+   const title = buildProfileMetaTitle(profile.github, count)
+   const metaImage = latest
+     ? buildProfileMetaImage(
+       profile.github,
+       definitionMap,
+       latest.definition,
       latest.definitionOwner,
       latest.definitionSlug,
     )
     : null
   const profileImage = metaImage || buildFallbackProfileMetaImage()
-  const latestCredentialName = latest
-    ? getMostRecentCredentialName(definitionMap, latest.definition, latest.definitionOwner, latest.definitionSlug)
-    : ''
+   const latestCredentialName = latest
+     ? getMostRecentCredentialName(definitionMap, latest.definition, latest.definitionOwner, latest.definitionSlug)
+     : ''
 
-  return {
-    title: `${profileDisplay(profile.github)} issued credentials | Skillcraft`,
-    description,
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      type: 'website',
-      url: canonical,
-      title: `${profileDisplay(profile.github)} issued credentials | Skillcraft`,
-      description,
-      section: 'Credential Profiles',
+   return {
+     title: {
+       absolute: title,
+     },
+     description,
+     alternates: {
+       canonical,
+     },
+     openGraph: {
+       type: 'website',
+       url: canonical,
+       title,
+       description,
+       section: 'Credential Profiles',
       tags: [
         profile.github,
         latestCredentialName,
@@ -245,15 +265,15 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
           alt: profileImage.alt,
         },
       ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${profileDisplay(profile.github)} issued credentials | Skillcraft`,
-      description,
-      images: [profileImage.url],
-    },
-  }
-}
+     },
+     twitter: {
+       card: 'summary_large_image',
+       title,
+       description,
+       images: [profileImage.url],
+     },
+   }
+ }
 
 const buildCredentialDefinitionMap = (definitions: CredentialDefinition[]) => {
   return definitions.reduce<Record<string, CredentialDefinition>>((accumulator, definition) => {
