@@ -7,7 +7,7 @@ import {
   resolveCredentialImage,
   CREDENTIAL_IMAGE_PLACEHOLDER,
 } from '../../../../../components/credentials/credentialImageResolver'
-import { findIssuedProfile, fetchLiveIssuedCredentialsIndex } from '../../../../../lib/issuedCredentialsIndex'
+import { findIssuedProfile, fetchIssuedCredentialsIndex } from '../../../../../lib/issuedCredentialsIndex'
 import { fetchCredentialIndex, type CredentialDefinition } from '../../../../../lib/credentialIndex'
 
 type ProfileParams = {
@@ -21,8 +21,6 @@ const SOCIAL_IMAGE_FALLBACK_HEIGHT = 630
 const SEO_DESCRIPTION_TARGET = 155
 
 const buildCanonical = (handle: string) => `/credentials/profiles/github/${handle}/`
-
-const getNoProfilesHandle = () => '__skillcraft-no-profiles__'
 
 const profileDisplay = (handle: string) => `@${handle}`
 
@@ -156,7 +154,7 @@ const formatIssuedCount = (issuedCount: number) => {
 
 const safeFetchProfiles = async () => {
   try {
-    return await fetchLiveIssuedCredentialsIndex()
+    return await fetchIssuedCredentialsIndex()
   } catch {
     return []
   }
@@ -164,13 +162,6 @@ const safeFetchProfiles = async () => {
 
 export async function generateStaticParams() {
   const issuedProfiles = await safeFetchProfiles()
-
-  if (issuedProfiles.length === 0) {
-    return [{
-      handle: getNoProfilesHandle(),
-    }]
-  }
-
   return issuedProfiles.map((profile) => ({
     handle: profile.github,
   }))

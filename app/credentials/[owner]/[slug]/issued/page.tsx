@@ -9,7 +9,7 @@ import {
 } from '../../../../../lib/credentialIndex'
 import {
   findIssuedProfilesForCredential,
-  fetchLiveIssuedCredentialsIndex,
+  fetchIssuedCredentialsIndex,
 } from '../../../../../lib/issuedCredentialsIndex'
 
 type CredentialIssuedUsersParams = {
@@ -54,7 +54,7 @@ const formatIssuedCount = (count: number) => {
 
 const safeFetchIssuedProfiles = async () => {
   try {
-    return await fetchLiveIssuedCredentialsIndex()
+    return await fetchIssuedCredentialsIndex()
   } catch {
     return []
   }

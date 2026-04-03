@@ -18,7 +18,7 @@ import {
 import {
   findIssuedCredentialForProfile,
   findIssuedProfile,
-  fetchLiveIssuedCredentialsIndex,
+  fetchIssuedCredentialsIndex,
   type IssuedCredentialSource,
 } from '../../../../../../../lib/issuedCredentialsIndex'
 
@@ -355,23 +355,13 @@ const buildCommitLines = (items: CommitReference[]) => {
   )
 }
 
-const getNoIssuedHandle = () => '__skillcraft-no-profiles__'
-
-const getNoIssuedPlaceholder = () => '__skillcraft-no-credential__'
-
 const safeFetchProfiles = async () => {
   try {
-    return await fetchLiveIssuedCredentialsIndex()
+    return await fetchIssuedCredentialsIndex()
   } catch {
     return []
   }
 }
-
-const buildMissingIssuedParams = (handle: string): IssuedCredentialDetailParams[] => [{
-  handle: handle || getNoIssuedHandle(),
-  owner: getNoIssuedPlaceholder(),
-  slug: getNoIssuedPlaceholder(),
-}]
 
 export async function generateStaticParams(): Promise<IssuedCredentialDetailParams[]> {
   const profiles = await safeFetchProfiles()
@@ -395,7 +385,7 @@ export async function generateStaticParams(): Promise<IssuedCredentialDetailPara
     })
   }
 
-  return buildMissingIssuedParams('')
+  return []
 }
 
 export async function generateMetadata({ params }: { params: IssuedCredentialDetailParams }): Promise<Metadata> {
@@ -539,10 +529,34 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
 
         <section className="section" aria-label="Issued credential trail">
           <div className="section-head section-head--skills">
-            <div>
-              <p className="eyebrow">Issued credential</p>
-              <h1>{definition.name}</h1>
-              <p>{`Definition: ${definition.id}`}</p>
+            <div
+              className="issued-credential-title-row"
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '1rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div
+                className="detail-image-shell"
+                style={{
+                  width: '150px',
+                  minWidth: '150px',
+                }}
+              >
+                <CredentialImageFallback
+                  src={imageUrl}
+                  alt={`${definition.name} credential image`}
+                  loading="eager"
+                  className="detail-image"
+                />
+              </div>
+
+              <div>
+                <h1>{definition.name}</h1>
+                <p className="caption">{`${definition.id} issued to ${profile.github} on ${issuedDate}`}</p>
+              </div>
             </div>
           </div>
         </section>
@@ -550,27 +564,9 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
         <section className="section skill-detail" aria-label="Issued credential details">
           <div className="detail-summary-layout">
             <div className="detail-summary-column">
-              <div className="detail-summary-shell">
-                <p className="kicker">Issued credential · @{profile.github}</p>
-
-                <div className="detail-image-shell">
-                  <CredentialImageFallback
-                    src={imageUrl}
-                    alt={`${definition.name} credential image`}
-                    loading="eager"
-                    className="detail-image"
-                  />
-                </div>
-
-                <h2>{definition.name}</h2>
-                <p className="caption">{`Issued ${issuedDate}`}</p>
-                <p className="caption">{`Claim ID: ${issued.claimId || 'not provided'}`}</p>
-              </div>
-
-                <section className="detail-summary">
+              <section className="detail-summary">
                 <h2 className="panel-title">Evidence details</h2>
                   <ul className="detail-list detail-list--compact">
-                    <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
                     <li><strong>Referenced commits:</strong> {commitReferences.length}</li>
                   </ul>
 
@@ -581,18 +577,19 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                 {buildCommitLines(commitReferences)}
               </section>
             </div>
-            <div className="detail-action-row">
-              <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Credential definition</h2>
-                <ul className="detail-list detail-list--compact">
-                  <li><strong>Handle:</strong> @{profile.github}</li>
-                  <li><strong>Owner:</strong> {definition.owner || owner}</li>
-                  <li><strong>Definition:</strong> {definition.id}</li>
-                  <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
-                  <li><strong>Issued:</strong> {issuedDate}</li>
-                  <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
-                </ul>
-              </section>
+              <div className="detail-action-row">
+                <section className="panel detail-sidebar-panel">
+                <h2 className="panel-title">Credential Information</h2>
+                  <ul className="detail-list detail-list--compact">
+                    <li><strong>Handle:</strong> @{profile.github}</li>
+                    <li><strong>Owner:</strong> {definition.owner || owner}</li>
+                    <li><strong>Definition:</strong> {definition.id}</li>
+                    <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
+                    <li><strong>Issued:</strong> {issuedDate}</li>
+                    <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
+                    <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
+                  </ul>
+                </section>
 
               <section className="panel detail-sidebar-panel">
                 <h2 className="panel-title">Requirements</h2>

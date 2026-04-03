@@ -14,7 +14,7 @@ import {
 } from '../../../../lib/credentialIndex'
 import {
   findIssuedProfilesForCredential,
-  fetchLiveIssuedCredentialsIndex,
+  fetchIssuedCredentialsIndex,
 } from '../../../../lib/issuedCredentialsIndex'
 
 type CredentialDetailParams = {
@@ -97,7 +97,7 @@ const formatUpdated = (value: string) => {
 
 const safeFetchIssuedProfiles = async () => {
   try {
-    return await fetchLiveIssuedCredentialsIndex()
+    return await fetchIssuedCredentialsIndex()
   } catch {
     return []
   }
