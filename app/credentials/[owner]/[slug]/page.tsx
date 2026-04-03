@@ -7,6 +7,7 @@ import CredentialDetailSummaryPanel from '../../../../components/credentials/Cre
 import CredentialRequirementsRenderer from '../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../components/seo/CredentialJsonLd'
 import { resolveCredentialImage } from '../../../../components/credentials/credentialImageResolver'
+import CopyCommandButton from '../../../../components/skills/CopyCommandButton'
 import {
   findCredentialByPath,
   fetchCredentialIndex,
@@ -23,6 +24,7 @@ type CredentialDetailParams = {
 }
 
 const BASE_URL = 'https://skillcraft.gg'
+const TRACK_PREFIX = 'skillcraft progress track '
 const defaultSummary = 'Explore this Skillcraft credential definition, source location, and supporting metadata.'
 
 const RESERVED_INDEX_KEYS = new Set(['id', 'name', 'owner', 'slug', 'url', 'path', 'updatedAt', 'description', 'requirements', 'images'])
@@ -252,6 +254,7 @@ export default async function CredentialDetailPage({ params }: { params: Credent
   const issuedUsers = findIssuedProfilesForCredential(issuedProfiles, selected.owner, selected.slug)
   const issuedCount = issuedUsers.length
   const issuedListUrl = buildIssuedListUrl(selected.owner, selected.slug)
+  const trackCommand = `${TRACK_PREFIX}${selected.owner}/${selected.slug}`
 
   return (
     <>
@@ -286,6 +289,14 @@ export default async function CredentialDetailPage({ params }: { params: Credent
             </div>
 
             <div className="detail-action-row">
+              <div className="skill-install-card">
+                <p className="label">Track this skill</p>
+                <div className="skill-install-row skill-install-row--stacked">
+                  <code className="skill-install-command skill-install-command--detail">{trackCommand}</code>
+                  <CopyCommandButton text={trackCommand} className="btn btn-primary" label="Copy Command" />
+                </div>
+              </div>
+
               <section className="panel detail-sidebar-panel">
                 <h2 className="panel-title">Registry details</h2>
                 <ul className="detail-list detail-list--compact">

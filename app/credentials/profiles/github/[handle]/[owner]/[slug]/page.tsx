@@ -6,6 +6,7 @@ import AppShell from '../../../../../../../components/AppShell'
 import CredentialImageFallback from '../../../../../../../components/credentials/CredentialImageFallback'
 import CredentialRequirementsRenderer from '../../../../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../../../../components/seo/CredentialJsonLd'
+import CopyCommandButton from '../../../../../../../components/skills/CopyCommandButton'
 import {
   resolveCredentialImage,
   CREDENTIAL_IMAGE_PLACEHOLDER,
@@ -29,6 +30,7 @@ type IssuedCredentialDetailParams = {
 }
 
 const BASE_URL = 'https://skillcraft.gg'
+const TRACK_PREFIX = 'skillcraft progress track '
 const SOCIAL_IMAGE_FALLBACK = '/images/og-home.jpg'
 const SOCIAL_IMAGE_FALLBACK_WIDTH = 1200
 const SOCIAL_IMAGE_FALLBACK_HEIGHT = 630
@@ -500,6 +502,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const sourceSummary = buildSourceSummary(commitReferences)
   const jsonLdSummary = buildJsonLdSummary(definition, issuedDate, issued.claimId, handle)
   const imageUrl = resolveCredentialImage(definition)
+  const trackCommand = `${TRACK_PREFIX}${definition.owner}/${definition.slug}`
 
   return (
     <>
@@ -527,63 +530,102 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
           ← Back to profile
         </Link>
 
-        <section className="section" aria-label="Issued credential trail">
-          <div className="section-head section-head--skills">
-            <div
-              className="issued-credential-title-row"
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '1rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <div
-                className="detail-image-shell"
-                style={{
-                  width: '150px',
-                  minWidth: '150px',
-                }}
-              >
-                <CredentialImageFallback
-                  src={imageUrl}
-                  alt={`${definition.name} credential image`}
-                  loading="eager"
-                  className="detail-image"
-                />
-              </div>
+         <section className="section skill-detail" aria-label="Issued credential details">
+           <div className="detail-summary-layout">
+             <div className="detail-summary-column">
+               <div
+                 className="issued-credential-title-row"
+                 style={{
+                   display: 'flex',
+                   alignItems: 'flex-start',
+                   gap: '1rem',
+                   flexWrap: 'wrap',
+                 }}
+               >
+                 <div
+                   className="detail-image-shell"
+                   style={{
+                     width: '150px',
+                     minWidth: '150px',
+                   }}
+                 >
+                   <CredentialImageFallback
+                     src={imageUrl}
+                     alt={`${definition.name} credential image`}
+                     loading="eager"
+                     className="detail-image"
+                   />
+                 </div>
 
-              <div>
-                <h1>{definition.name}</h1>
-                <p className="caption">{`${definition.id} issued to ${profile.github} on ${issuedDate}`}</p>
-              </div>
-            </div>
-          </div>
-        </section>
+                  <div>
+                    <h1>{definition.name}</h1>
+                    <p className="caption">
+                      <Link className="tag" href={`/credentials/${definition.owner}/${definition.slug}/`}>
+                        {definition.id}
+                      </Link>
+                      {` issued to `}
+                      <Link className="tag" href={`/credentials/profiles/github/${profile.github}/`}>
+                        @{profile.github}
+                      </Link>
+                      {` on ${issuedDate}`}
+                    </p>
+                  </div>
+                </div>
 
-        <section className="section skill-detail" aria-label="Issued credential details">
-          <div className="detail-summary-layout">
-            <div className="detail-summary-column">
-              <section className="detail-summary">
-                <h2 className="panel-title">Evidence details</h2>
+                <section className="detail-summary">
+                   <p className="caption">{definition.description || 'No description provided.'}</p>
+
+                  <h2 className="panel-title">Requirements</h2>
+                  <CredentialRequirementsRenderer requirements={definition.requirements} />
+
+                  <h2 className="panel-title">Evidence details</h2>
                   <ul className="detail-list detail-list--compact">
                     <li><strong>Referenced commits:</strong> {commitReferences.length}</li>
                   </ul>
 
-                <p className="panel-title" style={{ marginTop: '1rem' }}>Subject payload</p>
-                <pre className="metadata-json">{stringifySubject(issued.subject)}</pre>
+                  <p className="panel-title" style={{ marginTop: '1rem' }}>Subject payload</p>
+                  <pre className="metadata-json">{stringifySubject(issued.subject)}</pre>
 
-                <h2 className="panel-title">Source commits</h2>
-                {buildCommitLines(commitReferences)}
-              </section>
-            </div>
+                  <h2 className="panel-title">Source commits</h2>
+                  {buildCommitLines(commitReferences)}
+                </section>
+              </div>
+
               <div className="detail-action-row">
+                <div className="skill-install-card">
+                  <p className="label">This credential was earned with Skillcraft</p>
+                  <p className="caption">Install Skillcraft in your repository to track, claim, and verify your next credential.</p>
+                  <div className="skill-install-row skill-install-row--stacked">
+                    <Link className="btn btn-secondary" href="/docs">
+                      View Installation Docs
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="skill-install-card">
+                  <p className="label">Track this skill</p>
+                  <div className="skill-install-row skill-install-row--stacked">
+                    <code className="skill-install-command skill-install-command--detail">{trackCommand}</code>
+                    <CopyCommandButton text={trackCommand} className="btn btn-primary" label="Copy Command" />
+                  </div>
+                </div>
+
                 <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Credential Information</h2>
+                  <h2 className="panel-title">Credential Information</h2>
                   <ul className="detail-list detail-list--compact">
-                    <li><strong>Handle:</strong> @{profile.github}</li>
+                    <li>
+                      <strong>Handle:</strong>
+                      <Link className="tag" href={`/credentials/profiles/github/${profile.github}/`}>
+                        @{profile.github}
+                      </Link>
+                    </li>
                     <li><strong>Owner:</strong> {definition.owner || owner}</li>
-                    <li><strong>Definition:</strong> {definition.id}</li>
+                    <li>
+                      <strong>Definition:</strong>
+                      <Link className="tag" href={`/credentials/${definition.owner}/${definition.slug}/`}>
+                        {definition.id}
+                      </Link>
+                    </li>
                     <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
                     <li><strong>Issued:</strong> {issuedDate}</li>
                     <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
@@ -591,10 +633,6 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                   </ul>
                 </section>
 
-              <section className="panel detail-sidebar-panel">
-                <h2 className="panel-title">Requirements</h2>
-                <CredentialRequirementsRenderer requirements={definition.requirements} />
-              </section>
             </div>
           </div>
         </section>
