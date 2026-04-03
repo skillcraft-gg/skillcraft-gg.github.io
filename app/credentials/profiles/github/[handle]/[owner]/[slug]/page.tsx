@@ -628,7 +628,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                 </div>
 
                 <div className="skill-install-card">
-                  <p className="label">Track this skill</p>
+                  <p className="label">Track this credential</p>
                   <div className="skill-install-row skill-install-row--stacked">
                     <code className="skill-install-command skill-install-command--detail">{trackCommand}</code>
                     <CopyCommandButton text={trackCommand} className="btn btn-primary" label="Copy Command" />
