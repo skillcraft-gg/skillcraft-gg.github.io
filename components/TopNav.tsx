@@ -32,8 +32,8 @@ export default function TopNav({ activePath = '/' }: TopNavProps) {
             ? (
                 <a
                   href={route.href}
-                  target="_blank"
-                  rel="noreferrer"
+                  target={route.label === 'Docs' ? undefined : '_blank'}
+                  rel={route.label === 'Docs' ? undefined : 'noreferrer'}
                   key={route.label}
                   className="top-tab"
                 >

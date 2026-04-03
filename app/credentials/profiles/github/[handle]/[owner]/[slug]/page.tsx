@@ -7,6 +7,7 @@ import CredentialImageFallback from '../../../../../../../components/credentials
 import CredentialRequirementsRenderer from '../../../../../../../components/credentials/CredentialRequirementsRenderer'
 import CredentialJsonLd from '../../../../../../../components/seo/CredentialJsonLd'
 import CopyCommandButton from '../../../../../../../components/skills/CopyCommandButton'
+import LinkedInShareModal from '../../../../../../../components/credentials/LinkedInShareModal'
 import {
   resolveCredentialImage,
   CREDENTIAL_IMAGE_PLACEHOLDER,
@@ -163,6 +164,20 @@ const buildMetaImage = (definition: CredentialDefinition, handle: string, source
     height: SOCIAL_IMAGE_FALLBACK_HEIGHT,
     alt: `${definition.name} issued credential detail`,
   }
+}
+
+const buildLinkedInSuggestions = (
+  definition: CredentialDefinition,
+  issuedDate: string,
+  sourceSummary: string,
+) => {
+  const issuedDateLabel = formatIssuedDate(issuedDate)
+
+  return [
+    `I earned my ${definition.name} credential on Skillcraft today.`,
+    `I was issued ${definition.name} with verified GitHub evidence (${sourceSummary}).`,
+    `I just completed the ${definition.name} credential on Skillcraft. Verified on ${issuedDateLabel}.`,
+  ]
 }
 
 const buildJsonLdSummary = (
@@ -503,6 +518,8 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const jsonLdSummary = buildJsonLdSummary(definition, issuedDate, issued.claimId, handle)
   const imageUrl = resolveCredentialImage(definition)
   const trackCommand = `${TRACK_PREFIX}${definition.owner}/${definition.slug}`
+  const credentialPageUrl = `${BASE_URL}${buildCanonical(profile.github, owner, slug)}`
+  const linkedInShareMessages = buildLinkedInSuggestions(definition, issued.issuedAt, sourceSummary)
 
   return (
     <>
@@ -526,9 +543,17 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
         copyClassName="copy--wide copy-skill-detail"
         fullBleed
       >
-        <Link className="btn btn-secondary detail-back-link" href={`/credentials/profiles/github/${profile.github}/`} aria-label="Back to profile">
-          ← Back to profile
-        </Link>
+          <div className="detail-topbar">
+            <Link className="btn btn-secondary detail-back-link" href={`/credentials/profiles/github/${profile.github}/`} aria-label="Back to profile">
+              ← Back to profile
+            </Link>
+            <LinkedInShareModal
+              credentialPageUrl={credentialPageUrl}
+              suggestedMessages={linkedInShareMessages}
+              buttonClassName="btn btn-primary detail-share-link btn-linkedin"
+              buttonLabel="Share on LinkedIn"
+            />
+          </div>
 
          <section className="section skill-detail" aria-label="Issued credential details">
            <div className="detail-summary-layout">
@@ -594,7 +619,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
               <div className="detail-action-row">
                 <div className="skill-install-card">
                   <p className="label">This credential was earned with Skillcraft</p>
-                  <p className="caption">Install Skillcraft in your repository to track, claim, and verify your next credential.</p>
+                  <p className="caption">Enable Skillcraft in your repository to track, claim, and verify your next credential.</p>
                   <div className="skill-install-row skill-install-row--stacked">
                     <Link className="btn btn-secondary" href="/docs">
                       View Installation Docs
