@@ -334,7 +334,6 @@ a {
 }
 
 .hero--skills .content--wide {
-  display: flex;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -2124,6 +2123,27 @@ h4 {
   gap: 10px;
 }
 
+.issued-credential-title-row {
+  width: 100%;
+  min-width: 0;
+}
+
+.issued-credential-title-copy {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.issued-credential-title-copy h1 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.issued-credential-title-copy .caption {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .detail-image-shell {
   width: min(100%, 420px);
   border-radius: 12px;
@@ -3141,6 +3161,25 @@ h4 {
   align-content: end;
 }
 
+.skill-card.credential-card > .credential-card-pin {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--text);
+  pointer-events: none;
+}
+
+.skill-card.credential-card > .credential-card-pin svg {
+  width: 100%;
+  height: 100%;
+}
+
 .item-grid--list {
   grid-template-columns: 1fr;
 }
@@ -3821,6 +3860,7 @@ input::placeholder {
     --shell-vertical-padding: 18px;
     padding-left: calc(var(--hero-edge-strip-width) * 2);
     padding-right: var(--hero-edge-strip-width);
+    overflow-x: hidden;
   }
 
   .top-bar {
@@ -3941,13 +3981,19 @@ input::placeholder {
   .hero--skills .copy-skill-detail .skill-detail,
   .hero--skills .detail-summary-column,
   .hero--skills .detail-summary-shell {
-    overflow: visible;
+    overflow: hidden;
     height: auto;
   }
 
   .hero--skills .copy-skill-detail,
   .hero--skills .copy-skill-detail .skill-detail {
+    flex: none;
+    min-height: auto;
     max-height: none;
+  }
+
+  .hero--skills .copy-skill-detail .skill-detail {
+    grid-template-rows: auto;
   }
 
   .detail-summary-toggle {
@@ -3986,6 +4032,15 @@ input::placeholder {
     min-width: 0;
     max-width: 100%;
     width: 100%;
+  }
+
+  .detail-summary {
+    overflow: visible;
+    height: auto;
+    max-height: none;
+    min-height: auto;
+    flex: none;
+    overscroll-behavior: auto;
   }
 
   .detail-summary p,
@@ -4166,7 +4221,7 @@ input::placeholder {
 
   .hero--skills {
     height: auto;
-    min-height: 0;
+    min-height: 100svh;
     overflow: hidden;
   }
 
@@ -4181,6 +4236,7 @@ input::placeholder {
 
   .hero--skills .shell--wide {
     padding-bottom: 0;
+    overflow: hidden;
   }
 
   .hero--skills .content {

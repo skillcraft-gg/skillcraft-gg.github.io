@@ -6,6 +6,7 @@ import CredentialsList from '../../components/credentials/CredentialsList'
 import { collectCredentialOwners, fetchCredentialIndex, sortByUpdatedDesc } from '../../lib/credentialIndex'
 
 const PAGE_CANONICAL = 'https://skillcraft.gg/credentials'
+const PINNED_CREDENTIAL_ID = 'skillcraft-gg/hello-world'
 
 export const metadata: Metadata = {
   title: 'Credentials Registry | Skillcraft',
@@ -39,7 +40,17 @@ export const metadata: Metadata = {
 }
 
 export default async function CredentialsPage() {
-  const credentials = sortByUpdatedDesc(await fetchCredentialIndex())
+  const credentials = sortByUpdatedDesc(await fetchCredentialIndex()).sort((left, right) => {
+    if (left.id === PINNED_CREDENTIAL_ID) {
+      return -1
+    }
+
+    if (right.id === PINNED_CREDENTIAL_ID) {
+      return 1
+    }
+
+    return 0
+  })
   const owners = collectCredentialOwners(credentials)
 
   return (

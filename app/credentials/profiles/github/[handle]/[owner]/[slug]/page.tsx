@@ -553,9 +553,9 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                    />
                  </div>
 
-                  <div>
-                    <h1>{definition.name}</h1>
-                    <p className="caption">
+                   <div className="issued-credential-title-copy">
+                     <h1>{definition.name}</h1>
+                     <p className="caption">
                       <Link className="tag" href={`/credentials/${definition.owner}/${definition.slug}/`}>
                         {definition.id}
                       </Link>
