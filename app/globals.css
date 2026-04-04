@@ -2897,6 +2897,18 @@ h4 {
   touch-action: pan-y;
 }
 
+@media (min-width: 981px) {
+  .linkedin-share-messages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1400px) {
+  .linkedin-share-messages {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .linkedin-share-message {
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 12px;
@@ -2917,7 +2929,7 @@ h4 {
 }
 
 .linkedin-share-start-btn {
-  align-self: flex-start;
+  align-self: center;
   width: auto;
   min-width: 0;
   justify-content: center;
@@ -4605,6 +4617,11 @@ input::placeholder {
     padding: 16px;
     gap: 10px;
     overflow: visible;
+  }
+
+  .linkedin-share-start-btn {
+    align-self: stretch;
+    width: 100%;
   }
 
   .linkedin-share-messages,

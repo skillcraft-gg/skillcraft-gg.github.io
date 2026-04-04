@@ -185,13 +185,18 @@ const buildLinkedInSuggestions = (
   definition: CredentialDefinition,
   issuedDate: string,
   sourceSummary: string,
+  handle: string,
 ) => {
   const issuedDateLabel = formatIssuedDate(issuedDate)
+  const holder = formatHandleLabel(handle)
 
   return [
     `I earned the ${definition.name} credential on Skillcraft with verified GitHub evidence.`,
     `I just earned ${definition.name} on Skillcraft. ${sourceSummary}`,
     `I earned the ${definition.name} credential on Skillcraft. View the public verification trail from ${issuedDateLabel}.`,
+    `Congrats to ${holder} for earning the ${definition.name} credential on Skillcraft.`,
+    `${holder} just earned the ${definition.name} credential on Skillcraft with verified GitHub evidence.`,
+    `Shoutout to ${holder} for earning the ${definition.name} credential on Skillcraft. ${sourceSummary}`,
   ]
 }
 
@@ -487,7 +492,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const imageUrl = resolveCredentialImage(definition)
   const trackCommand = `${TRACK_PREFIX}${definition.owner}/${definition.slug}`
   const credentialPageUrl = `${BASE_URL}${buildCanonical(profile.github, owner, slug)}`
-  const linkedInShareMessages = buildLinkedInSuggestions(definition, issued.issuedAt, sourceSummary)
+  const linkedInShareMessages = buildLinkedInSuggestions(definition, issued.issuedAt, sourceSummary, handle)
   const issueMonth = formatIssuedMonth(issued.issuedAt)
   const issueYear = formatIssuedYear(issued.issuedAt)
   const verificationCommits = commitReferences.map((entry) => ({

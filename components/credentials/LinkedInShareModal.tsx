@@ -35,6 +35,8 @@ export default function LinkedInShareModal({
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null)
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const hasAutoOpenedRef = useRef(false)
+  const overlayRef = useRef<HTMLDivElement | null>(null)
+  const messagesRef = useRef<HTMLDivElement | null>(null)
 
   const safeMessages = useMemo(
     () => suggestedMessages.filter((message) => typeof message === 'string' && message.trim().length > 0),
@@ -109,6 +111,30 @@ export default function LinkedInShareModal({
     }
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      if (window.matchMedia('(max-width: 980px)').matches) {
+        window.scrollTo(0, 0)
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }
+
+      if (overlayRef.current) {
+        overlayRef.current.scrollTop = 0
+      }
+
+      if (messagesRef.current) {
+        messagesRef.current.scrollTop = 0
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [isOpen])
+
   const handleCopyMessage = async (message: string, index: number) => {
     if (!navigator?.clipboard?.writeText) {
       return
@@ -143,6 +169,7 @@ export default function LinkedInShareModal({
 
       {isOpen && (
         <div
+          ref={overlayRef}
           className="linkedin-share-overlay"
           role="presentation"
           onClick={() => setIsOpen(false)}
@@ -172,7 +199,7 @@ export default function LinkedInShareModal({
 
             <h3 id="linkedin-share-title" className="linkedin-share-title">Suggested post text</h3>
 
-            <div className="linkedin-share-messages">
+            <div ref={messagesRef} className="linkedin-share-messages">
               {safeMessages.map((message, index) => (
                 <article key={`${index}-${message.slice(0, 28)}`} className="linkedin-share-message">
                   <p>{message}</p>
