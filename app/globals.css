@@ -778,6 +778,7 @@ h4 {
     color 180ms ease;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .btn-icon {
@@ -2045,6 +2046,84 @@ h4 {
   flex: 1 1 auto;
 }
 
+.issued-credential-fields {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0 18px;
+}
+
+.issued-credential-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issued-credential-field-card {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 10, 20, 0.46);
+}
+
+.issued-credential-field-card--wide {
+  grid-column: 1 / -1;
+}
+
+.issued-credential-field-label,
+.issued-credential-date-label,
+.issued-credential-field-note {
+  margin: 0;
+}
+
+.issued-credential-field-label,
+.issued-credential-date-label {
+  color: rgba(226, 234, 248, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.issued-credential-field-value,
+.issued-credential-field-link {
+  margin: 0;
+  color: #f5f3ee;
+  font-size: 15px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.issued-credential-field-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.issued-credential-field-note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.issued-credential-date-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issued-credential-date-cell {
+  display: grid;
+  gap: 6px;
+}
+
+.issued-credential-about {
+  display: grid;
+  gap: 10px;
+}
+
 .detail-image-shell {
   width: min(100%, 420px);
   border-radius: 12px;
@@ -2187,6 +2266,10 @@ h4 {
   color: #c9dcff;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.detail-summary a.btn {
+  text-decoration: none;
 }
 
 .detail-metadata-list {
@@ -2536,33 +2619,39 @@ h4 {
 }
 
 
-.linkedin-share-overlay {
+.linkedin-share-overlay,
+.credential-verify-overlay {
   position: fixed;
   inset: 0;
   z-index: 120;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 20px;
   background: rgba(2, 5, 15, 0.82);
   backdrop-filter: blur(6px);
 }
 
-.linkedin-share-modal {
+.linkedin-share-modal,
+.credential-verify-modal {
   position: relative;
-  width: min(700px, 100%);
-  max-height: min(84vh, 700px);
+  width: 100%;
+  height: 100%;
+  max-height: 100dvh;
   padding: 24px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   gap: 14px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
+  border-radius: 0;
   background: rgba(10, 12, 24, 0.9);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
-.linkedin-share-close {
+.linkedin-share-close,
+.credential-verify-close {
   position: absolute;
   top: 10px;
   right: 12px;
@@ -2579,30 +2668,35 @@ h4 {
   transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 
-.linkedin-share-close-icon {
+.linkedin-share-close-icon,
+.credential-verify-close-icon {
   display: inline-flex;
   width: 14px;
   height: 14px;
   transition: transform 180ms ease;
 }
 
-.linkedin-share-close-icon svg {
+.linkedin-share-close-icon svg,
+.credential-verify-close-icon svg {
   width: 100%;
   height: 100%;
 }
 
-.linkedin-share-close:hover {
+.linkedin-share-close:hover,
+.credential-verify-close:hover {
   color: #ffffff;
   border-color: rgba(255, 255, 255, 0.45);
   background: rgba(255, 255, 255, 0.08);
   transform: rotate(90deg);
 }
 
-.linkedin-share-close:hover .linkedin-share-close-icon {
+.linkedin-share-close:hover .linkedin-share-close-icon,
+.credential-verify-close:hover .credential-verify-close-icon {
   transform: scale(1.08);
 }
 
-.linkedin-share-close:focus-visible {
+.linkedin-share-close:focus-visible,
+.credential-verify-close:focus-visible {
   outline: 2px solid rgba(99, 216, 255, 0.6);
   outline-offset: 2px;
 }
@@ -2620,8 +2714,10 @@ h4 {
 .linkedin-share-messages {
   display: grid;
   gap: 10px;
-  max-height: 390px;
   overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .linkedin-share-message {
@@ -2644,7 +2740,7 @@ h4 {
 }
 
 .linkedin-share-start-btn {
-  align-self: stretch;
+  align-self: flex-start;
   width: auto;
   min-width: 0;
   justify-content: center;
@@ -2655,7 +2751,132 @@ h4 {
   color: #0a66c2;
 }
 
-.detail-topbar .btn-linkedin {
+.credential-verify-title,
+.credential-verify-subtitle,
+.credential-verify-intro {
+  margin: 0;
+}
+
+.credential-verify-subtitle {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.credential-verify-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 36px;
+}
+
+.credential-verify-title {
+  font-size: clamp(24px, 3vw, 30px);
+  line-height: 1;
+}
+
+.credential-verify-status {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #dbe4f7;
+}
+
+.credential-verify-status svg {
+  width: 100%;
+  height: 100%;
+}
+
+.credential-verify-status.is-complete {
+  color: #73e49b;
+}
+
+.credential-verify-spinner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(219, 228, 247, 0.24);
+  border-top-color: rgba(219, 228, 247, 0.92);
+  animation: credential-verify-spin 760ms linear infinite;
+}
+
+.credential-verify-scroll {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  padding-right: 2px;
+}
+
+.credential-verify-sections {
+  display: grid;
+  gap: 12px;
+}
+
+.credential-verify-section {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(11, 12, 22, 0.56);
+  animation: credential-verify-reveal 320ms ease forwards;
+}
+
+.credential-verify-commit-list {
+  display: grid;
+  gap: 10px;
+}
+
+.credential-verify-commit-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 10, 20, 0.45);
+}
+
+.credential-verify-commit-copy,
+.credential-verify-commit-actions {
+  display: grid;
+  gap: 6px;
+}
+
+.credential-verify-commit-actions {
+  justify-items: end;
+}
+
+.credential-verify-commit-sha,
+.credential-verify-commit-repo {
+  margin: 0;
+}
+
+.credential-verify-commit-sha {
+  color: #f5f3ee;
+  font-family: var(--font-display);
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.credential-verify-commit-repo {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.btn-linkedin {
   gap: 8px;
   color: #fff;
   background: #0a66c2;
@@ -2663,7 +2884,7 @@ h4 {
   box-shadow: none;
 }
 
-.detail-topbar .btn-linkedin:hover {
+.btn-linkedin:hover {
   background: #004182;
   border-color: rgba(0, 65, 130, 0.75);
   transform: translateY(-2px);
@@ -3285,6 +3506,9 @@ h4 {
   appearance: none;
   cursor: pointer;
   font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 11px;
@@ -3308,6 +3532,17 @@ h4 {
 .tag:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.35);
+}
+
+.tag-icon {
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+}
+
+.tag-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 code {
@@ -3508,6 +3743,28 @@ input::placeholder {
   }
 }
 
+@keyframes credential-verify-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes credential-verify-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1180px) {
   .shell {
     --content-scale: 1;
@@ -3647,6 +3904,22 @@ input::placeholder {
 
   .detail-action-row {
     gap: 8px;
+  }
+
+  .issued-credential-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .issued-credential-date-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .credential-verify-commit-card {
+    grid-template-columns: 1fr;
+  }
+
+  .credential-verify-commit-actions {
+    justify-items: start;
   }
 
   .detail-summary-layout {
@@ -4016,15 +4289,34 @@ input::placeholder {
   .linkedin-share-overlay {
     align-items: stretch;
     padding: 0;
+    overflow-y: auto;
   }
 
-  .linkedin-share-modal {
-    max-height: none;
-    height: 100vh;
+  .credential-verify-overlay {
+    align-items: stretch;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .linkedin-share-modal,
+  .credential-verify-modal {
     width: 100%;
+    height: auto;
+    min-height: 100%;
+    max-height: none;
     border-radius: 0;
     padding: 16px;
     gap: 10px;
+    overflow: visible;
+  }
+
+  .linkedin-share-messages,
+  .credential-verify-scroll {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+    -webkit-overflow-scrolling: auto;
+    touch-action: auto;
   }
 
   .linkedin-share-message {
@@ -4034,6 +4326,14 @@ input::placeholder {
 
   .linkedin-share-message p {
     font-size: 12px;
+  }
+
+  .credential-verify-section {
+    padding: 10px;
+  }
+
+  .issued-credential-date-grid {
+    grid-template-columns: 1fr;
   }
 
   .btn-linkedin-badge {

@@ -168,6 +168,7 @@ export default async function CredentialIssuedUsersPage({ params }: { params: Cr
             {issuedUsers.map(({ profile, issuedCredential }) => {
               const profilePath = `/credentials/profiles/github/${profile.github}/`
               const issuedCredentialPath = `/credentials/profiles/github/${profile.github}/${selected.owner}/${selected.slug}/`
+              const issuedCredentialVerifyPath = `${issuedCredentialPath}?verify`
               const issuedAt = formatIssuedDate(issuedCredential.issuedAt)
 
               return (
@@ -183,7 +184,7 @@ export default async function CredentialIssuedUsersPage({ params }: { params: Cr
                   {issuedCredential.claimId ? <p className="skill-meta-text">Claim ID: {issuedCredential.claimId}</p> : null}
                   <div className="tag-row" role="group" aria-label="Issued credential actions">
                     <Link className="tag" href={profilePath}>View Profile</Link>
-                    <Link className="tag" href={issuedCredentialPath}>Verify Credential</Link>
+                    <Link className="tag" href={issuedCredentialVerifyPath}>Verify Credential</Link>
                   </div>
                 </article>
               )

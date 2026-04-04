@@ -61,6 +61,7 @@ export default function IssuedCredentialList({ handle, credentials, definitions 
       <div className="item-grid item-grid--credentials">
         {credentials.map((credential) => {
           const detailPath = `/credentials/profiles/github/${handle}/${credential.definitionOwner}/${credential.definitionSlug}/`
+          const verifyPath = `${detailPath}?verify`
           const issuedAtLabel = normalizeDate(credential.issuedAt)
           const commitCount = credential.sourceCommits.length
           const hasCommitText = commitCount > 0
@@ -79,7 +80,7 @@ export default function IssuedCredentialList({ handle, credentials, definitions 
                 />
               </div>
 
-               <Link href={detailPath} className="skill-link-row">
+                <Link href={verifyPath} className="skill-link-row">
                 <div>
                   <p className="label">Credential</p>
                   <h3>{credential.definition || `${credential.definitionOwner}/${credential.definitionSlug}`}</h3>

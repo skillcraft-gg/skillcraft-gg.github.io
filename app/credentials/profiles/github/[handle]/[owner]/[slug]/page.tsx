@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import AppShell from '../../../../../../../components/AppShell'
 import CredentialImageFallback from '../../../../../../../components/credentials/CredentialImageFallback'
 import CredentialRequirementsRenderer from '../../../../../../../components/credentials/CredentialRequirementsRenderer'
+import VerifyCredentialModal from '../../../../../../../components/credentials/VerifyCredentialModal'
 import CredentialJsonLd from '../../../../../../../components/seo/CredentialJsonLd'
 import CopyCommandButton from '../../../../../../../components/skills/CopyCommandButton'
 import LinkedInShareModal from '../../../../../../../components/credentials/LinkedInShareModal'
@@ -65,6 +66,28 @@ const normalizeIssuedDateIso = (value: string) => {
   }
 
   return new Date(parsed).toISOString()
+}
+
+const formatIssuedMonth = (value: string) => {
+  const parsed = Date.parse(value)
+  if (Number.isNaN(parsed)) {
+    return 'Unknown'
+  }
+
+  return new Date(parsed).toLocaleDateString('en-US', {
+    month: 'long',
+  })
+}
+
+const formatIssuedYear = (value: string) => {
+  const parsed = Date.parse(value)
+  if (Number.isNaN(parsed)) {
+    return 'Unknown'
+  }
+
+  return new Date(parsed).toLocaleDateString('en-US', {
+    year: 'numeric',
+  })
 }
 
 const normalize = (value: string): string => (value || '').trim()
@@ -195,19 +218,6 @@ const buildJsonLdSummary = (
   return `${definition.name} was issued to ${holder} on ${issuedDate}.`
 }
 
-const stringifySubject = (subject: unknown) => {
-  if (!subject || typeof subject !== 'object') {
-    return 'No subject payload was published in this issued credential.'
-  }
-
-  const output = JSON.stringify(subject, null, 2)
-  if (output === '{}') {
-    return 'No subject payload was published in this issued credential.'
-  }
-
-  return output
-}
-
 const toRepositoryPath = (value: string) => {
   const repository = (value || '').trim().replace(/^@+/, '').replace(/^https:\/\//i, '').replace(/\/+$/g, '')
   if (!/^[a-z0-9-_.]+\/[a-z0-9-_.]+$/i.test(repository)) {
@@ -281,95 +291,54 @@ const buildCommitReferences = (
   return referenced
 }
 
-const buildCommitLines = (items: CommitReference[]) => {
-  if (!items || items.length === 0) {
-    return <p className="caption">No source commits were referenced.</p>
+const buildCommitHref = ({ commit, repo }: CommitReference) => {
+  const normalizedCommit = normalizeCommitReference(commit)
+  if (!normalizedCommit) {
+    return ''
   }
 
-  const commitLinkFromEntry = ({ commit, repo }: CommitReference) => {
-    const normalizedCommit = normalizeCommitReference(commit)
-    if (!normalizedCommit) {
-      return null
-    }
-
-    if (/^https?:\/\//i.test(normalizedCommit)) {
-      return normalizedCommit
-    }
-
-    if (repo && /^[a-z0-9-_.]+\/[a-z0-9-_.]+$/.test(repo)) {
-      return `https://github.com/${repo}/commit/${normalizedCommit}`
-    }
-
-    const ownerRepoWithAtSha = /^([a-z0-9-_.]+\/[a-z0-9-_.]+)@([0-9a-f]{7,40})$/i.exec(normalizedCommit)
-    if (ownerRepoWithAtSha) {
-      return `https://github.com/${ownerRepoWithAtSha[1]}/commit/${ownerRepoWithAtSha[2]}`
-    }
-
-    const maybePath = /(?:https:\/\/github\.com\/)?([a-z0-9-_.]+\/[a-z0-9-_.]+)(?:\/commit)?\/([0-9a-f]{7,40})(?:\/)?$/i.exec(normalizedCommit)
-    if (maybePath) {
-      return `https://github.com/${maybePath[1]}/commit/${maybePath[2]}`
-    }
-
-    const withRepoSuffix = /^([a-z0-9-_.]+\/[a-z0-9-_.]+):([0-9a-f]{7,40})$/i.exec(normalizedCommit)
-    if (withRepoSuffix) {
-      return `https://github.com/${withRepoSuffix[1]}/commit/${withRepoSuffix[2]}`
-    }
-
-    const commitOnly = /^[0-9a-f]{7,40}$/i.test(normalizedCommit)
-    if (commitOnly) {
-      return `https://github.com/search?q=${encodeURIComponent(normalizedCommit)}&type=commits`
-    }
-
-    return null
+  if (/^https?:\/\//i.test(normalizedCommit)) {
+    return normalizedCommit
   }
 
-  const buildProofLinkFromEntry = ({ commit, repo }: CommitReference) => {
-    if (!repo) {
-      return null
-    }
-
-    const normalizedCommit = normalizeCommitReference(commit)
-    if (!normalizedCommit) {
-      return null
-    }
-
-    return `https://github.com/${repo}/search?q=${encodeURIComponent(`${normalizedCommit} path:proofs`)}&type=code`
+  if (repo && /^[a-z0-9-_.]+\/[a-z0-9-_.]+$/.test(repo)) {
+    return `https://github.com/${repo}/commit/${normalizedCommit}`
   }
 
-  return (
-    <ul className="detail-list detail-list--compact">
-      {items.map((entry, index) => (
-        <li key={`${entry.commit}-${index}`}>
-          {(() => {
-            const href = commitLinkFromEntry(entry)
-            if (!href) {
-              return <span>{entry.commit}</span>
-            }
+  const ownerRepoWithAtSha = /^([a-z0-9-_.]+\/[a-z0-9-_.]+)@([0-9a-f]{7,40})$/i.exec(normalizedCommit)
+  if (ownerRepoWithAtSha) {
+    return `https://github.com/${ownerRepoWithAtSha[1]}/commit/${ownerRepoWithAtSha[2]}`
+  }
 
-            return (
-              <a href={href} target="_blank" rel="noreferrer">
-                {entry.commit}
-              </a>
-            )
-          })()}
-          {entry.repo ? <span className="caption"> from {entry.repo}</span> : null}
-          {(() => {
-            const proofLink = buildProofLinkFromEntry(entry)
-            if (!proofLink) {
-              return null
-            }
+  const maybePath = /(?:https:\/\/github\.com\/)?([a-z0-9-_.]+\/[a-z0-9-_.]+)(?:\/commit)?\/([0-9a-f]{7,40})(?:\/)?$/i.exec(normalizedCommit)
+  if (maybePath) {
+    return `https://github.com/${maybePath[1]}/commit/${maybePath[2]}`
+  }
 
-            return (
-              <span className="caption">
-                {' '}-{' '}
-                <a href={proofLink} target="_blank" rel="noreferrer">Proof</a>
-              </span>
-            )
-          })()}
-        </li>
-      ))}
-    </ul>
-  )
+  const withRepoSuffix = /^([a-z0-9-_.]+\/[a-z0-9-_.]+):([0-9a-f]{7,40})$/i.exec(normalizedCommit)
+  if (withRepoSuffix) {
+    return `https://github.com/${withRepoSuffix[1]}/commit/${withRepoSuffix[2]}`
+  }
+
+  const commitOnly = /^[0-9a-f]{7,40}$/i.test(normalizedCommit)
+  if (commitOnly) {
+    return `https://github.com/search?q=${encodeURIComponent(normalizedCommit)}&type=commits`
+  }
+
+  return ''
+}
+
+const buildProofHref = ({ commit, repo }: CommitReference) => {
+  if (!repo) {
+    return ''
+  }
+
+  const normalizedCommit = normalizeCommitReference(commit)
+  if (!normalizedCommit) {
+    return ''
+  }
+
+  return `https://github.com/${repo}/search?q=${encodeURIComponent(`${normalizedCommit} path:proofs`)}&type=code`
 }
 
 const safeFetchProfiles = async () => {
@@ -520,6 +489,14 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
   const trackCommand = `${TRACK_PREFIX}${definition.owner}/${definition.slug}`
   const credentialPageUrl = `${BASE_URL}${buildCanonical(profile.github, owner, slug)}`
   const linkedInShareMessages = buildLinkedInSuggestions(definition, issued.issuedAt, sourceSummary)
+  const issueMonth = formatIssuedMonth(issued.issuedAt)
+  const issueYear = formatIssuedYear(issued.issuedAt)
+  const verificationCommits = commitReferences.map((entry) => ({
+    commit: entry.commit,
+    repo: entry.repo || '',
+    commitUrl: buildCommitHref(entry),
+    proofUrl: buildProofHref(entry),
+  }))
 
   return (
     <>
@@ -547,12 +524,6 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
             <Link className="btn btn-secondary detail-back-link" href={`/credentials/profiles/github/${profile.github}/`} aria-label="Back to profile">
               ← Back to profile
             </Link>
-            <LinkedInShareModal
-              credentialPageUrl={credentialPageUrl}
-              suggestedMessages={linkedInShareMessages}
-              buttonClassName="btn btn-primary detail-share-link btn-linkedin"
-              buttonLabel="Share on LinkedIn"
-            />
           </div>
 
          <section className="section skill-detail" aria-label="Issued credential details">
@@ -597,70 +568,138 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                   </div>
                 </div>
 
-                <section className="detail-summary">
-                   <p className="caption">{definition.description || 'No description provided.'}</p>
+                 <section className="detail-summary">
+                    <section className="issued-credential-fields" aria-label="LinkedIn credential fields">
+                      <div className="issued-credential-field-grid">
+                        <article className="issued-credential-field-card">
+                          <p className="issued-credential-field-label">Credential Name</p>
+                          <div>
+                            <Link className="tag" href={`/credentials/${definition.owner}/${definition.slug}/`}>
+                              {definition.id}
+                            </Link>
+                          </div>
+                        </article>
 
-                  <h2 className="panel-title">Requirements</h2>
-                  <CredentialRequirementsRenderer requirements={definition.requirements} />
+                        <article className="issued-credential-field-card">
+                          <p className="issued-credential-field-label">Issuing organization</p>
+                          <div>
+                            <a className="tag" href="https://www.linkedin.com/company/skillcraft-gg/" target="_blank" rel="noreferrer">
+                              Skillcraft
+                              <span className="tag-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" focusable="false" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M14 5H19V10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="M10 14L19 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="M19 14V18C19 18.5304 18.7893 19.0391 18.4142 19.4142C18.0391 19.7893 17.5304 20 17 20H6C5.46957 20 4.96086 19.7893 4.58579 19.4142C4.21071 19.0391 4 18.5304 4 18V7C4 6.46957 4.21071 5.96086 4.58579 5.58579C4.96086 5.21071 5.46957 5 6 5H10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </span>
+                            </a>
+                          </div>
+                        </article>
 
-                  <h2 className="panel-title">Evidence details</h2>
-                  <ul className="detail-list detail-list--compact">
-                    <li><strong>Referenced commits:</strong> {commitReferences.length}</li>
-                  </ul>
+                       <article className="issued-credential-field-card">
+                         <p className="issued-credential-field-label">Issue date</p>
+                         <div className="issued-credential-date-grid">
+                           <div className="issued-credential-date-cell">
+                             <p className="issued-credential-date-label">Month</p>
+                             <p className="issued-credential-field-value">{issueMonth}</p>
+                           </div>
+                           <div className="issued-credential-date-cell">
+                             <p className="issued-credential-date-label">Year</p>
+                             <p className="issued-credential-field-value">{issueYear}</p>
+                           </div>
+                         </div>
+                       </article>
 
-                  <p className="panel-title" style={{ marginTop: '1rem' }}>Subject payload</p>
-                  <pre className="metadata-json">{stringifySubject(issued.subject)}</pre>
+                        <article className="issued-credential-field-card">
+                          <p className="issued-credential-field-label">Expiration date</p>
+                          <p className="issued-credential-field-value">Does not expire</p>
+                        </article>
 
-                  <h2 className="panel-title">Source commits</h2>
-                  {buildCommitLines(commitReferences)}
-                </section>
-              </div>
+                        <article className="issued-credential-field-card">
+                          <p className="issued-credential-field-label">Credential ID</p>
+                          <p className="issued-credential-field-value">{issued.claimId || 'Not provided'}</p>
+                        </article>
+
+                        <article className="issued-credential-field-card">
+                          <p className="issued-credential-field-label">Issued To</p>
+                          <div>
+                            <Link className="tag" href={`/credentials/profiles/github/${profile.github}/`}>
+                              @{profile.github}
+                            </Link>
+                          </div>
+                        </article>
+
+                        <article className="issued-credential-field-card issued-credential-field-card--wide">
+                          <p className="issued-credential-field-label">Credential URL</p>
+                         <a className="issued-credential-field-link" href={credentialPageUrl} target="_blank" rel="noreferrer">
+                           {credentialPageUrl}
+                         </a>
+                       </article>
+                     </div>
+
+                    </section>
+
+                    <section className="panel issued-credential-about" aria-label="About this credential">
+                      <h2 className="panel-title">About this credential</h2>
+                      <p className="caption">{definition.description || 'No description provided.'}</p>
+
+                      <h3 className="panel-title">Requirements</h3>
+                      <CredentialRequirementsRenderer requirements={definition.requirements} />
+
+                      <div>
+                        <Link className="btn btn-secondary" href={`/credentials/${definition.owner}/${definition.slug}/`}>
+                          View Credential
+                        </Link>
+                      </div>
+                    </section>
+
+                  </section>
+                </div>
 
               <div className="detail-action-row">
                 <div className="skill-install-card">
-                  <p className="label">This credential was earned with Skillcraft</p>
-                  <p className="caption">Enable Skillcraft in your repository to track, claim, and verify your next credential.</p>
+                  <p className="label">This credential was issued by Skillcraft</p>
+                  <p className="caption">Skillcraft works with your favourite AI coding agents like Opencode to turn git commits from real projects into verifiable evidence.</p>
                   <div className="skill-install-row skill-install-row--stacked">
-                    <Link className="btn btn-secondary" href="/docs">
-                      View Installation Docs
+                    <VerifyCredentialModal
+                      buttonClassName="btn btn-secondary"
+                      buttonLabel="Verify Credential"
+                      openQueryParam="verify"
+                      credentialName={definition.name}
+                      credentialDefinitionId={definition.id}
+                      holderHandle={profile.github}
+                      issuedDate={issuedDate}
+                      claimId={issued.claimId}
+                      sourceSummary={sourceSummary}
+                      credentialUrl={credentialPageUrl}
+                      requirements={definition.requirements}
+                      commitReferences={verificationCommits}
+                    />
+                    <Link className="btn btn-primary btn-flat" href="/docs/tutorials/first-credential">
+                      Earn Your First Credential
                     </Link>
+                    <LinkedInShareModal
+                      credentialPageUrl={credentialPageUrl}
+                      suggestedMessages={linkedInShareMessages}
+                      buttonClassName="btn btn-primary btn-linkedin"
+                      buttonLabel="Share on LinkedIn"
+                      openQueryParam="share"
+                    />
                   </div>
                 </div>
 
                 <div className="skill-install-card">
                   <p className="label">Track this credential</p>
+                  <p className="caption">You can track your progress to earn this credential too.</p>
                   <div className="skill-install-row skill-install-row--stacked">
                     <code className="skill-install-command skill-install-command--detail">{trackCommand}</code>
                     <CopyCommandButton text={trackCommand} className="btn btn-primary" label="Copy Command" />
                   </div>
                 </div>
 
-                <section className="panel detail-sidebar-panel">
-                  <h2 className="panel-title">Credential Information</h2>
-                  <ul className="detail-list detail-list--compact">
-                    <li>
-                      <strong>Handle:</strong>
-                      <Link className="tag" href={`/credentials/profiles/github/${profile.github}/`}>
-                        @{profile.github}
-                      </Link>
-                    </li>
-                    <li><strong>Owner:</strong> {definition.owner || owner}</li>
-                    <li>
-                      <strong>Definition:</strong>
-                      <Link className="tag" href={`/credentials/${definition.owner}/${definition.slug}/`}>
-                        {definition.id}
-                      </Link>
-                    </li>
-                    <li><strong>Definition path:</strong> {definition.path || 'not provided'}</li>
-                    <li><strong>Issued:</strong> {issuedDate}</li>
-                    <li><strong>Claim ID:</strong> {issued.claimId || 'not provided'}</li>
-                    <li><strong>Source path:</strong> {issued.path || 'not provided'}</li>
-                  </ul>
-                </section>
-
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
       </AppShell>
     </>
   )

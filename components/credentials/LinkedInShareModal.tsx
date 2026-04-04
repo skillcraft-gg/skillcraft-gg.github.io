@@ -7,6 +7,7 @@ type LinkedInShareModalProps = {
   suggestedMessages: string[]
   buttonClassName?: string
   buttonLabel?: string
+  openQueryParam?: string
 }
 
 export default function LinkedInShareModal({
@@ -14,10 +15,12 @@ export default function LinkedInShareModal({
   suggestedMessages,
   buttonClassName = 'btn btn-primary detail-share-link btn-linkedin',
   buttonLabel = 'Share on LinkedIn',
+  openQueryParam,
 }: LinkedInShareModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null)
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hasAutoOpenedRef = useRef(false)
 
   const safeMessages = useMemo(
     () => suggestedMessages.filter((message) => typeof message === 'string' && message.trim().length > 0),
@@ -28,6 +31,18 @@ export default function LinkedInShareModal({
     () => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(credentialPageUrl)}`,
     [credentialPageUrl],
   )
+
+  useEffect(() => {
+    if (!openQueryParam || hasAutoOpenedRef.current) {
+      return
+    }
+
+    const currentSearchParams = new URLSearchParams(window.location.search)
+    if (currentSearchParams.has(openQueryParam)) {
+      hasAutoOpenedRef.current = true
+      setIsOpen(true)
+    }
+  }, [openQueryParam])
 
   useEffect(() => {
     const message = copiedMessageIndex
@@ -52,18 +67,23 @@ export default function LinkedInShareModal({
       return
     }
 
+    const shouldLockBodyScroll = !window.matchMedia('(max-width: 980px)').matches
+    const previousBodyOverflow = document.body.style.overflow
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false)
       }
     }
 
-    document.body.style.overflow = 'hidden'
+    if (shouldLockBodyScroll) {
+      document.body.style.overflow = 'hidden'
+    }
     window.addEventListener('keydown', onKeyDown)
 
     return () => {
       window.removeEventListener('keydown', onKeyDown)
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousBodyOverflow
     }
   }, [isOpen])
 
