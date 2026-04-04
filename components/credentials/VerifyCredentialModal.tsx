@@ -63,6 +63,7 @@ export default function VerifyCredentialModal({
   const hasAutoOpenedRef = useRef(false)
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const sectionRefs = useRef<Array<HTMLElement | null>>([])
 
   const safeCommits = useMemo(
     () => commitReferences.filter((entry) => typeof entry.commit === 'string' && entry.commit.trim().length > 0),
@@ -170,6 +171,38 @@ export default function VerifyCredentialModal({
     return () => window.cancelAnimationFrame(frameId)
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen || visibleSectionCount === 0) {
+      return
+    }
+
+    const section = sectionRefs.current[visibleSectionCount - 1]
+    const container = scrollContainerRef.current && scrollContainerRef.current.scrollHeight > scrollContainerRef.current.clientHeight + 1
+      ? scrollContainerRef.current
+      : overlayRef.current
+
+    if (!section || !container) {
+      return
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      const containerRect = container.getBoundingClientRect()
+      const sectionRect = section.getBoundingClientRect()
+      const isSectionTopVisible = sectionRect.top >= containerRect.top && sectionRect.top <= containerRect.bottom
+
+      if (isSectionTopVisible) {
+        return
+      }
+
+      container.scrollTo({
+        top: container.scrollTop + (sectionRect.top - containerRect.top),
+        behavior: visibleSectionCount === 1 ? 'auto' : 'smooth',
+      })
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
+  }, [isOpen, visibleSectionCount])
+
   return (
     <>
       <button
@@ -233,7 +266,7 @@ export default function VerifyCredentialModal({
             <div ref={scrollContainerRef} className="credential-verify-scroll">
               <div className="credential-verify-sections">
                 {visibleSectionCount >= 1 ? (
-                  <section className="credential-verify-section">
+                  <section ref={(node) => { sectionRefs.current[0] = node }} className="credential-verify-section">
                     <p className="label">1. Claim Submitted</p>
                     <ul className="detail-list detail-list--compact">
                       <li>
@@ -257,14 +290,14 @@ export default function VerifyCredentialModal({
                 ) : null}
 
                 {visibleSectionCount >= 2 ? (
-                  <section className="credential-verify-section">
+                  <section ref={(node) => { sectionRefs.current[1] = node }} className="credential-verify-section">
                     <p className="label">2. Credential Requirements</p>
                     <CredentialRequirementsRenderer requirements={requirements} emptyMessage="No requirements were defined for this credential." />
                   </section>
                 ) : null}
 
                 {visibleSectionCount >= 3 ? (
-                  <section className="credential-verify-section">
+                  <section ref={(node) => { sectionRefs.current[2] = node }} className="credential-verify-section">
                     <p className="label">3. Evidence Review</p>
                     <p className="caption">
                       {sourceSummary}
@@ -301,7 +334,7 @@ export default function VerifyCredentialModal({
                 ) : null}
 
                 {visibleSectionCount >= 4 ? (
-                  <section className="credential-verify-section">
+                  <section ref={(node) => { sectionRefs.current[3] = node }} className="credential-verify-section">
                     <p className="label">4. Issued Credential Confirmation</p>
                     <ul className="detail-list detail-list--compact">
                       <li>
