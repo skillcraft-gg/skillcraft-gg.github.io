@@ -410,7 +410,7 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
   const title = buildMetaTitle(credentialForMeta, handle)
   const socialTitle = buildSocialTitle(credentialForMeta, handle)
   const metaImage = buildMetaImageAlt(credentialForMeta, handle, sourceSummary)
-  const metaImageUrl = `${canonical}opengraph-image.png`
+  const metaImageUrl = `${canonical}opengraph-image.jpg`
   const publishedTime = normalizeIssuedDateIso(issued.issuedAt)
 
   return {

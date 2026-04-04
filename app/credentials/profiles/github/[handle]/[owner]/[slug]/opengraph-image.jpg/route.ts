@@ -1,3 +1,5 @@
+import sharp from 'sharp'
+
 import {
   generateStaticParams,
   renderIssuedCredentialOpenGraphImage,
@@ -14,7 +16,19 @@ export async function GET(
   { params }: { params: IssuedCredentialImageParams },
 ) {
   const response = await renderIssuedCredentialOpenGraphImage(params)
-  response.headers.set('Content-Type', 'image/png')
-  response.headers.set('Content-Disposition', 'inline')
-  return response
+  const pngBuffer = Buffer.from(await response.arrayBuffer())
+  const jpegBuffer = await sharp(pngBuffer)
+    .jpeg({
+      quality: 72,
+      mozjpeg: true,
+      progressive: true,
+    })
+    .toBuffer()
+
+  return new Response(new Uint8Array(jpegBuffer), {
+    headers: {
+      'Content-Type': 'image/jpeg',
+      'Content-Disposition': 'inline',
+    },
+  })
 }
