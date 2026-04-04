@@ -3206,6 +3206,8 @@ h4 {
   color: inherit;
   text-decoration: none;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .skill-card[role='link']:focus-visible,
@@ -3408,8 +3410,53 @@ h4 {
   flex-wrap: wrap;
 }
 
+.skill-link-main {
+  color: inherit;
+  text-decoration: none;
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.skill-link-main:hover h3,
+.skill-link-main:focus-visible h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.credential-card-primary-link {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.credential-card-primary-link:hover h3,
+.credential-card-primary-link:focus-visible h3 {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.credential-card-actions {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.credential-card-button {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
 .skill-link-row .caption {
   font-size: 12px;
+}
+
+.skill-card__footer {
+  margin-top: auto;
 }
 
 .link-list li,

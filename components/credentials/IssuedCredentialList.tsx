@@ -70,28 +70,34 @@ export default function IssuedCredentialList({ handle, credentials, definitions 
           const definitionImage = buildDefinitionImageUrl(credential, definitions)
 
           return (
-           <article key={`${handle}-${credential.definitionOwner}-${credential.definitionSlug}-${credential.claimId || credential.definition}`} className="skill-card">
-              <div className="credential-card-media">
-                <CredentialImageFallback
-                  src={definitionImage}
-                  alt={`${credential.definition} credential image`}
-                  loading="lazy"
-                  className="credential-card-image"
-                />
-              </div>
-
-                <Link href={verifyPath} className="skill-link-row">
-                <div>
-                  <p className="label">Credential</p>
-                  <h3>{credential.definition || `${credential.definitionOwner}/${credential.definitionSlug}`}</h3>
-                  <p className="caption">Issued {issuedAtLabel}</p>
-                  <p className="skill-meta-text">{hasCommitText}</p>
-                  {credential.claimId ? (
-                    <p className="skill-meta-text">Claim ID: {credential.claimId}</p>
-                  ) : null}
+            <article key={`${handle}-${credential.definitionOwner}-${credential.definitionSlug}-${credential.claimId || credential.definition}`} className="skill-card credential-card">
+              <Link href={detailPath} className="credential-card-primary-link">
+                <div className="credential-card-media">
+                  <CredentialImageFallback
+                    src={definitionImage}
+                    alt={`${credential.definition} credential image`}
+                    loading="lazy"
+                    className="credential-card-image"
+                  />
                 </div>
-                <span className="tag" aria-hidden="true">Verify Credential</span>
+
+                <div className="credential-card-body">
+                  <div className="credential-card-body-top">
+                    <p className="label">Credential</p>
+                    <h3>{credential.definition || `${credential.definitionOwner}/${credential.definitionSlug}`}</h3>
+                    <p className="caption">Issued {issuedAtLabel}</p>
+                    <p className="skill-meta-text">{hasCommitText}</p>
+                    {credential.claimId ? (
+                      <p className="skill-meta-text">Claim ID: {credential.claimId}</p>
+                    ) : null}
+                  </div>
+                </div>
               </Link>
+
+              <div className="credential-card-actions skill-install-row">
+                <Link href={detailPath} className="btn btn-secondary credential-card-button">View Credential</Link>
+                <Link href={verifyPath} className="btn btn-secondary credential-card-button">Verify Credential</Link>
+              </div>
             </article>
           )
         })}

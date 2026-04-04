@@ -286,26 +286,28 @@ export default function SkillsList({ skills, owners, tags }: SkillsListProps) {
 
                       <p className="skill-card__description">{shortSummary}</p>
 
-                      <div className="skill-card__divider" />
+                      <div className="skill-card__footer">
+                        <div className="skill-card__divider" />
 
-                      <div className="meta-row">
-                        {skill.tags.map((tag) => (
-                          <span className="meta-pill meta-chip" key={`${skill.id}-${tag}`}>
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
+                        <div className="meta-row">
+                          {skill.tags.map((tag) => (
+                            <span className="meta-pill meta-chip" key={`${skill.id}-${tag}`}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
 
-                      <p className="skill-meta-text">{formatRelativeDate(skill.updatedAt)}</p>
+                        <p className="skill-meta-text">{formatRelativeDate(skill.updatedAt)}</p>
 
-                      <div
-                        className="skill-install-row"
-                        onClick={(event) => event.stopPropagation()}
-                      >
-                        <code className="skill-install" title={`Install command: ${installCommand}`}>
-                          {installCommand}
-                        </code>
-                        <CopyCommandButton text={installCommand} />
+                        <div
+                          className="skill-install-row"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <code className="skill-install" title={`Install command: ${installCommand}`}>
+                            {installCommand}
+                          </code>
+                          <CopyCommandButton text={installCommand} />
+                        </div>
                       </div>
                     </article>
                   )

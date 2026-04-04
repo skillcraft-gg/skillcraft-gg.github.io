@@ -153,7 +153,6 @@ export default async function CredentialIssuedUsersPage({ params }: { params: Cr
       <section className="section" aria-label="Credential issued users header">
         <div className="section-head section-head--skills">
           <div>
-            <p className="eyebrow">Issued credentials</p>
             <h1>{selected.name}</h1>
             <p>{formatIssuedCount(issuedUsers.length)}</p>
           </div>
@@ -168,23 +167,22 @@ export default async function CredentialIssuedUsersPage({ params }: { params: Cr
             {issuedUsers.map(({ profile, issuedCredential }) => {
               const profilePath = `/credentials/profiles/github/${profile.github}/`
               const issuedCredentialPath = `/credentials/profiles/github/${profile.github}/${selected.owner}/${selected.slug}/`
-              const issuedCredentialVerifyPath = `${issuedCredentialPath}?verify`
               const issuedAt = formatIssuedDate(issuedCredential.issuedAt)
 
               return (
-                <article key={`${profile.github}-${issuedCredential.claimId || issuedCredential.definition}`} className="skill-card">
-                  <p className="label">Credential holder</p>
-                  <h3>
-                    <Link href={profilePath}>@{profile.github}</Link>
-                  </h3>
-                  <p className="caption">
-                    Issued credential: <Link href={issuedCredentialPath}>{selected.name}</Link>
-                  </p>
-                  <p className="skill-meta-text">Issued {issuedAt}</p>
-                  {issuedCredential.claimId ? <p className="skill-meta-text">Claim ID: {issuedCredential.claimId}</p> : null}
-                  <div className="tag-row" role="group" aria-label="Issued credential actions">
-                    <Link className="tag" href={profilePath}>View Profile</Link>
-                    <Link className="tag" href={issuedCredentialVerifyPath}>Verify Credential</Link>
+                <article key={`${profile.github}-${issuedCredential.claimId || issuedCredential.definition}`} className="skill-card credential-card">
+                  <Link href={issuedCredentialPath} className="credential-card-primary-link credential-card-body">
+                    <div className="credential-card-body-top">
+                      <p className="label">Credential holder</p>
+                      <h3>@{profile.github}</h3>
+                      <p className="caption">Issued credential: {selected.name}</p>
+                      <p className="skill-meta-text">Issued {issuedAt}</p>
+                      {issuedCredential.claimId ? <p className="skill-meta-text">Claim ID: {issuedCredential.claimId}</p> : null}
+                    </div>
+                  </Link>
+                  <div className="credential-card-actions skill-install-row" role="group" aria-label="Issued credential actions">
+                    <Link className="btn btn-secondary credential-card-button" href={profilePath}>View Profile</Link>
+                    <Link className="btn btn-secondary credential-card-button" href={issuedCredentialPath}>View Credential</Link>
                   </div>
                 </article>
               )
