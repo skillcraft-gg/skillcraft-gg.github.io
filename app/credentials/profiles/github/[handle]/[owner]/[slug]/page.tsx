@@ -11,7 +11,6 @@ import CopyCommandButton from '../../../../../../../components/skills/CopyComman
 import LinkedInShareModal from '../../../../../../../components/credentials/LinkedInShareModal'
 import {
   resolveCredentialImage,
-  CREDENTIAL_IMAGE_PLACEHOLDER,
 } from '../../../../../../../components/credentials/credentialImageResolver'
 import {
   findCredentialByPath,
@@ -33,7 +32,6 @@ type IssuedCredentialDetailParams = {
 
 const BASE_URL = 'https://skillcraft.gg'
 const TRACK_PREFIX = 'skillcraft progress track '
-const SOCIAL_IMAGE_FALLBACK = '/images/og-home.jpg'
 const SOCIAL_IMAGE_FALLBACK_WIDTH = 1200
 const SOCIAL_IMAGE_FALLBACK_HEIGHT = 630
 const SEO_DESCRIPTION_TARGET = 155
@@ -144,48 +142,42 @@ const buildMetaDescription = (
   definition: CredentialDefinition,
   issuedAt: string,
   handle: string,
-  claimId: string,
   sourceSummary: string,
 ) => {
-  const issued = formatIssuedDate(issuedAt)
   const holder = formatHandleLabel(handle)
-  const claimClause = claimId ? ` Claim ID ${claimId}.` : ''
-  const base = `${definition.name} was issued to ${holder} on ${issued}.${claimClause}`
-  const sourceClause = sourceSummary ? ` ${sourceSummary}` : ''
-  const candidate = `${base}${sourceClause}`
+  const issued = formatIssuedDate(issuedAt)
+  const candidate = sourceSummary
+    ? `See how ${holder} earned the ${definition.name} credential on Skillcraft with verified GitHub evidence. ${sourceSummary}`
+    : `See how ${holder} earned the ${definition.name} credential on Skillcraft with verified GitHub evidence and a public verification trail.`
 
   if (candidate.length <= SEO_DESCRIPTION_TARGET) {
     return candidate
   }
 
-  if (candidate.length > SEO_DESCRIPTION_TARGET) {
-    const compactClaim = claimId ? ` Claim ${claimId.slice(0, 12)}.` : ''
-    const compact = `${definition.name} issued to ${holder} on ${issued}.${compactClaim}${sourceClause}`
-    return compact.length <= SEO_DESCRIPTION_TARGET ? compact : compact.slice(0, SEO_DESCRIPTION_TARGET)
+  const fallback = `See how ${holder} earned the ${definition.name} credential on Skillcraft. Issued ${issued} with public verification details.`
+  if (fallback.length <= SEO_DESCRIPTION_TARGET) {
+    return fallback
   }
 
-  return candidate.slice(0, SEO_DESCRIPTION_TARGET)
+  return fallback.slice(0, SEO_DESCRIPTION_TARGET)
 }
 
 const buildMetaTitle = (definition: CredentialDefinition, handle: string) => {
   const holder = formatHandleLabel(handle)
-  return `${definition.name} issued to ${holder} | Prove your AI skills at Skillcraft.gg`
+  return `${definition.name} earned by ${holder}`
 }
 
-const buildMetaImage = (definition: CredentialDefinition, handle: string, sourceSummary: string) => {
-  const resolved = resolveCredentialImage(definition)
-  if (resolved && resolved !== CREDENTIAL_IMAGE_PLACEHOLDER) {
-    return {
-      url: resolved,
-      alt: `${definition.name} issued to ${formatHandleLabel(handle)}${sourceSummary ? ` · ${sourceSummary}` : ''}`,
-    }
-  }
+const buildSocialTitle = (definition: CredentialDefinition, handle: string) => {
+  const holder = formatHandleLabel(handle)
+  return `${holder} earned ${definition.name} | Verified on Skillcraft`
+}
 
+const buildMetaImageAlt = (definition: CredentialDefinition, handle: string, sourceSummary: string) => {
+  const holder = formatHandleLabel(handle)
   return {
-    url: SOCIAL_IMAGE_FALLBACK,
-    width: SOCIAL_IMAGE_FALLBACK_WIDTH,
-    height: SOCIAL_IMAGE_FALLBACK_HEIGHT,
-    alt: `${definition.name} issued credential detail`,
+    alt: sourceSummary
+      ? `${holder} earned the ${definition.name} credential on Skillcraft with verified GitHub evidence. ${sourceSummary}`
+      : `${holder} earned the ${definition.name} credential on Skillcraft. View the public verification trail.`,
   }
 }
 
@@ -197,9 +189,9 @@ const buildLinkedInSuggestions = (
   const issuedDateLabel = formatIssuedDate(issuedDate)
 
   return [
-    `I earned my ${definition.name} credential on Skillcraft today.`,
-    `I was issued ${definition.name} with verified GitHub evidence (${sourceSummary}).`,
-    `I just completed the ${definition.name} credential on Skillcraft. Verified on ${issuedDateLabel}.`,
+    `I earned the ${definition.name} credential on Skillcraft with verified GitHub evidence.`,
+    `I just earned ${definition.name} on Skillcraft. ${sourceSummary}`,
+    `I earned the ${definition.name} credential on Skillcraft. View the public verification trail from ${issuedDateLabel}.`,
   ]
 }
 
@@ -413,11 +405,12 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
     credentialForMeta,
     issued.issuedAt,
     handle,
-    issued.claimId,
     sourceSummary,
   )
   const title = buildMetaTitle(credentialForMeta, handle)
-  const metaImage = buildMetaImage(credentialForMeta, handle, sourceSummary)
+  const socialTitle = buildSocialTitle(credentialForMeta, handle)
+  const metaImage = buildMetaImageAlt(credentialForMeta, handle, sourceSummary)
+  const metaImageUrl = `${canonical}opengraph-image`
   const publishedTime = normalizeIssuedDateIso(issued.issuedAt)
 
   return {
@@ -428,14 +421,15 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
     },
     openGraph: {
       type: 'article',
+      siteName: 'Skillcraft',
       url: canonical,
-      title,
+      title: socialTitle,
       description: summary,
       images: [
         {
-          url: metaImage.url,
-          ...(metaImage.width ? { width: metaImage.width } : {}),
-          ...(metaImage.height ? { height: metaImage.height } : {}),
+          url: metaImageUrl,
+          width: SOCIAL_IMAGE_FALLBACK_WIDTH,
+          height: SOCIAL_IMAGE_FALLBACK_HEIGHT,
           alt: metaImage.alt,
         },
       ],
@@ -449,9 +443,14 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: socialTitle,
       description: summary,
-      images: [metaImage.url],
+      images: [
+        {
+          url: metaImageUrl,
+          alt: metaImage.alt,
+        },
+      ],
     },
   }
 }
