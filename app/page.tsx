@@ -82,10 +82,9 @@ export default async function HomePage() {
             <span className="headline-accent">So how do you prove it?</span>
           </h1>
         <p className="lede">
-          AI has collapsed the cost of building. One developer can ship systems that used to take teams.
-          But when everyone can produce, output stops being a signal. What matters is how you work —
-          the patterns you apply, the decisions you make, the way you use AI to move through a problem.
-          Skillcraft captures that directly from real projects, turning everyday development into verifiable proof of capability.
+          AI has changed software development forever. One developer can now build systems that used to require a team.
+          Skillcraft works with your favourite AI coding agents like Opencode to turn git commits from real projects into verifiable evidence,
+          so you can earn credentials that prove your AI coding skills.
         </p>
       <div className="cta-row">
         <Link className="btn btn-primary btn-flat" href="#get-started">Get Started</Link>
@@ -160,10 +159,13 @@ export default async function HomePage() {
              </div>
            </section>
                 <div className="cta-row">
-                 <Link className="btn btn-secondary" href="/docs">
-                   View Documentation
-                 </Link>
-               </div>
+                  <Link className="btn btn-primary btn-flat" href="/docs/tutorials/first-credential">
+                    Earn Your First Credential
+                  </Link>
+                  <Link className="btn btn-secondary" href="/docs">
+                    View Documentation
+                  </Link>
+                </div>
                 <p className="tagline">
                 Prove your AI coding skills with confidence.
               </p>
