@@ -3596,6 +3596,29 @@ input::placeholder {
     max-width: none;
   }
 
+  .hero--landing .hero-title,
+  .hero--landing .lede {
+    max-width: none;
+  }
+
+  .hero--landing .headline-top,
+  .hero--landing .headline-accent {
+    display: inline;
+  }
+
+  .hero--landing .headline-top::after {
+    content: ' ';
+  }
+
+  .hero--landing .headline-accent {
+    margin-top: 0;
+  }
+
+  .hero--landing .lede {
+    width: 100%;
+    text-wrap: wrap;
+  }
+
   .right-spacer {
     margin-top: 0;
     margin-left: 0;
