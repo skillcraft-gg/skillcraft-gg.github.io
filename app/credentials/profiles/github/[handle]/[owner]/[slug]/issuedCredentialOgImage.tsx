@@ -17,25 +17,19 @@ import {
   findIssuedProfile,
 } from '../../../../../../../lib/issuedCredentialsIndex'
 
-type IssuedCredentialImageParams = {
+export type IssuedCredentialImageParams = {
   handle: string
   owner: string
   slug: string
 }
 
-type IssuedCredentialImageStaticParams = IssuedCredentialImageParams & {
-  __metadata_id__?: string[]
-}
-
 const PUBLIC_IMAGE_ROOT = path.join(process.cwd(), 'public', 'images')
 const localAssetCache = new Map<string, string>()
 
-export const alt = 'Issued Skillcraft credential preview'
 export const size = {
   width: 1200,
   height: 630,
 }
-export const contentType = 'image/png'
 export const runtime = 'nodejs'
 
 const safeFetchProfiles = async () => {
@@ -73,18 +67,17 @@ const fallbackCredential = (owner: string, slug: string, definition: string, iss
   indexMetadata: {},
 })
 
-export async function generateStaticParams(): Promise<IssuedCredentialImageStaticParams[]> {
+export async function generateStaticParams(): Promise<IssuedCredentialImageParams[]> {
   const profiles = await safeFetchProfiles()
 
   return profiles.flatMap((profile) => profile.credentials.map((credential) => ({
     handle: profile.github,
     owner: credential.definitionOwner,
     slug: credential.definitionSlug,
-    __metadata_id__: [],
   })))
 }
 
-export default async function OpenGraphImage({ params }: { params: IssuedCredentialImageParams }) {
+export async function renderIssuedCredentialOpenGraphImage(params: IssuedCredentialImageParams) {
   const handle = decodeURIComponent((params.handle || '').toLowerCase())
   const owner = decodeURIComponent((params.owner || '').toLowerCase())
   const slug = decodeURIComponent((params.slug || '').toLowerCase())
