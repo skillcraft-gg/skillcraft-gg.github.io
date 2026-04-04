@@ -2262,6 +2262,14 @@ h4 {
 
 .issued-credential-image-shell {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.issued-credential-image-shell .detail-image {
+  width: auto;
+  max-width: 100%;
 }
 
 .issued-credential-image-avatar {
@@ -4014,8 +4022,10 @@ input::placeholder {
     padding-right: var(--hero-edge-strip-width);
   }
 
-  .content {
-    grid-template-columns: minmax(300px, 620px) 1fr;
+  .content:not(.content--single):not(.content--wide) {
+    grid-template-columns: minmax(300px, 620px) minmax(280px, 380px);
+    justify-content: space-between;
+    column-gap: 24px;
   }
 
   .char {
@@ -4234,7 +4244,7 @@ input::placeholder {
     width: 100%;
     min-width: 0;
     max-width: 100%;
-    padding-right: 20px;
+    padding-right: 0;
     padding-bottom: 20px;
   }
 
@@ -4255,6 +4265,11 @@ input::placeholder {
     min-height: auto;
     flex: none;
     overscroll-behavior: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
   }
 
   .detail-summary p,
