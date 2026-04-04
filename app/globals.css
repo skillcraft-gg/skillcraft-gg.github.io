@@ -849,13 +849,19 @@ h4 {
 }
 
 .tagline {
-  margin-top: 38px;
+  margin-top: 0;
   font-size: clamp(18px, 1.6vw, 26px);
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.04em;
   color: rgba(255,255,255,0.94);
   text-shadow: 0 8px 24px rgba(0,0,0,0.28);
+}
+
+.hero-grid > .tagline,
+.how-it-works > .tagline,
+.whitepaper-block > .tagline {
+  margin-top: 86px;
 }
 
 .tagline .accent {
@@ -1035,6 +1041,7 @@ h4 {
 }
 
 .whitepaper-block {
+  margin-top: 0;
   width: 100%;
 }
 
@@ -1188,7 +1195,7 @@ h4 {
 }
 
 .landing-footer {
-  margin-top: 26px;
+  margin-top: 86px;
   margin-bottom: 18px;
   width: 100%;
   max-width: none;
@@ -1381,8 +1388,11 @@ h4 {
     gap: 16px;
   }
 
-  .how-it-works + .tagline {
-    margin-top: 34px;
+  .hero-grid > .tagline,
+  .how-it-works > .tagline,
+  .whitepaper-block > .tagline,
+  .landing-footer {
+    margin-top: 75px;
   }
 
   .section.whitepaper-promo > * + * {
@@ -1452,8 +1462,11 @@ h4 {
 }
 
 @media (max-width: 768px) {
+  .hero-grid > .tagline,
+  .how-it-works > .tagline,
+  .whitepaper-block > .tagline,
   .landing-footer {
-    margin-top: 22px;
+    margin-top: 59px;
   }
 
   .landing-footer-grid {
@@ -4007,8 +4020,11 @@ input::placeholder {
     font-size: 16px;
   }
 
-  .tagline {
-    margin-top: 28px;
+  .hero-grid > .tagline,
+  .how-it-works > .tagline,
+  .whitepaper-block > .tagline,
+  .landing-footer {
+    margin-top: 37px;
   }
 
   .terminal {
