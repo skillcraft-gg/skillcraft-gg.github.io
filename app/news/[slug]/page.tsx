@@ -503,9 +503,9 @@ export default async function NewsPostPage({ params }: { params: NewsPostParams 
                       all claims must come from commits pushed to public GitHub repositories. Opencode is currently supported.
                       We'd love your feedback through the beta and let us know what you think.
                   </p>
-                  <div className="skill-install-row skill-install-row--stacked">
-                    <Link className="btn btn-primary btn-flat" href="/#get-started">
-                      Get Started
+                  <div className="skill-install-row skill-install-row--stacked news-post-welcome-actions">
+                    <Link className="btn btn-primary btn-flat" href="/docs/tutorials/first-credential">
+                      Earn Your First Credential
                     </Link>
                     <Link className="btn btn-secondary" href="/docs">
                       View Documentation

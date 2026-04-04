@@ -2426,6 +2426,16 @@ h4 {
   text-align: left;
 }
 
+.news-post-welcome-actions {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.news-post-welcome-actions .btn {
+  width: auto;
+}
+
 .news-post-reader .panel {
   border-color: var(--news-post-line);
   background: var(--news-post-panel);
@@ -3942,6 +3952,16 @@ input::placeholder {
   .button {
     width: 100%;
     justify-content: center;
+  }
+
+  .news-post-welcome-actions {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+  }
+
+  .news-post-welcome-actions .btn {
+    width: 100%;
   }
 
   .detail-topbar {
