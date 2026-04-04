@@ -2,6 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+function syncModalQueryParam(openQueryParam: string, shouldBeOpen: boolean) {
+  const url = new URL(window.location.href)
+
+  if (shouldBeOpen) {
+    url.searchParams.set(openQueryParam, '')
+  } else {
+    url.searchParams.delete(openQueryParam)
+  }
+
+  const search = url.searchParams.toString()
+  const nextUrl = `${url.pathname}${search ? `?${search}` : ''}${url.hash}`
+  window.history.replaceState(window.history.state, '', nextUrl)
+}
+
 type LinkedInShareModalProps = {
   credentialPageUrl: string
   suggestedMessages: string[]
@@ -43,6 +57,14 @@ export default function LinkedInShareModal({
       setIsOpen(true)
     }
   }, [openQueryParam])
+
+  useEffect(() => {
+    if (!openQueryParam) {
+      return
+    }
+
+    syncModalQueryParam(openQueryParam, isOpen)
+  }, [isOpen, openQueryParam])
 
   useEffect(() => {
     const message = copiedMessageIndex

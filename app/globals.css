@@ -4343,22 +4343,34 @@ input::placeholder {
   }
 
   .linkedin-share-overlay {
-    align-items: stretch;
+    align-items: flex-start;
     padding: 0;
     overflow-y: auto;
   }
 
   .credential-verify-overlay {
-    align-items: stretch;
+    align-items: flex-start;
     padding: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   .linkedin-share-modal,
   .credential-verify-modal {
     width: 100%;
     height: auto;
-    min-height: 100%;
+    max-height: none;
+    border-radius: 0;
+    padding: 16px;
+    gap: 10px;
+    overflow: visible;
+  }
+
+  .linkedin-share-modal {
+    width: 100%;
+    height: auto;
     max-height: none;
     border-radius: 0;
     padding: 16px;
@@ -4375,6 +4387,18 @@ input::placeholder {
     touch-action: auto;
   }
 
+  body.credential-verify-modal-open .hero--skills,
+  body.credential-verify-modal-open .hero--skills .shell,
+  body.credential-verify-modal-open .hero--skills .content,
+  body.credential-verify-modal-open .hero--skills .content--wide,
+  body.credential-verify-modal-open .hero--skills .copy,
+  body.credential-verify-modal-open .hero--skills .copy-skill-detail,
+  body.credential-verify-modal-open .hero--skills .copy-skill-detail .skill-detail,
+  body.credential-verify-modal-open .hero--skills .detail-summary-column,
+  body.credential-verify-modal-open .hero--skills .detail-summary-shell {
+    overflow-y: hidden;
+  }
+
   .linkedin-share-message {
     padding: 9px;
     gap: 8px;
@@ -4386,10 +4410,6 @@ input::placeholder {
 
   .credential-verify-section {
     padding: 10px;
-  }
-
-  .issued-credential-date-grid {
-    grid-template-columns: 1fr;
   }
 
   .btn-linkedin-badge {

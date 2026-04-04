@@ -4,6 +4,22 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import CredentialRequirementsRenderer from './CredentialRequirementsRenderer'
 
+const VERIFY_MODAL_OPEN_CLASS = 'credential-verify-modal-open'
+
+function syncModalQueryParam(openQueryParam: string, shouldBeOpen: boolean) {
+  const url = new URL(window.location.href)
+
+  if (shouldBeOpen) {
+    url.searchParams.set(openQueryParam, '')
+  } else {
+    url.searchParams.delete(openQueryParam)
+  }
+
+  const search = url.searchParams.toString()
+  const nextUrl = `${url.pathname}${search ? `?${search}` : ''}${url.hash}`
+  window.history.replaceState(window.history.state, '', nextUrl)
+}
+
 type VerifyCredentialCommitReference = {
   commit: string
   repo?: string
@@ -45,6 +61,8 @@ export default function VerifyCredentialModal({
   const [isVerificationComplete, setIsVerificationComplete] = useState(false)
   const revealTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const hasAutoOpenedRef = useRef(false)
+  const overlayRef = useRef<HTMLDivElement | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
 
   const safeCommits = useMemo(
     () => commitReferences.filter((entry) => typeof entry.commit === 'string' && entry.commit.trim().length > 0),
@@ -70,17 +88,28 @@ export default function VerifyCredentialModal({
   }, [openQueryParam])
 
   useEffect(() => {
+    if (!openQueryParam) {
+      return
+    }
+
+    syncModalQueryParam(openQueryParam, isOpen)
+  }, [isOpen, openQueryParam])
+
+  useEffect(() => {
     if (!isOpen) {
       revealTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
       revealTimeoutsRef.current = []
       setVisibleSectionCount(0)
       setIsVerificationComplete(false)
+      document.body.classList.remove(VERIFY_MODAL_OPEN_CLASS)
       document.body.style.overflow = ''
+      document.body.style.overflowY = ''
       return
     }
 
     const shouldLockBodyScroll = !window.matchMedia('(max-width: 980px)').matches
     const previousBodyOverflow = document.body.style.overflow
+    const previousBodyOverflowY = document.body.style.overflowY
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -100,8 +129,10 @@ export default function VerifyCredentialModal({
       }
     }, delay))
 
+    document.body.classList.add(VERIFY_MODAL_OPEN_CLASS)
     if (shouldLockBodyScroll) {
       document.body.style.overflow = 'hidden'
+      document.body.style.overflowY = 'hidden'
     }
     window.addEventListener('keydown', onKeyDown)
 
@@ -109,8 +140,34 @@ export default function VerifyCredentialModal({
       revealTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
       revealTimeoutsRef.current = []
       window.removeEventListener('keydown', onKeyDown)
+      document.body.classList.remove(VERIFY_MODAL_OPEN_CLASS)
       document.body.style.overflow = previousBodyOverflow
+      document.body.style.overflowY = previousBodyOverflowY
     }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      if (window.matchMedia('(max-width: 980px)').matches) {
+        window.scrollTo(0, 0)
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }
+
+      if (overlayRef.current) {
+        overlayRef.current.scrollTop = 0
+      }
+
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frameId)
   }, [isOpen])
 
   return (
@@ -128,6 +185,7 @@ export default function VerifyCredentialModal({
 
       {isOpen && (
         <div
+          ref={overlayRef}
           className="credential-verify-overlay"
           role="presentation"
           onClick={() => setIsOpen(false)}
@@ -172,7 +230,7 @@ export default function VerifyCredentialModal({
                 )}
               </span>
             </div>
-            <div className="credential-verify-scroll">
+            <div ref={scrollContainerRef} className="credential-verify-scroll">
               <div className="credential-verify-sections">
                 {visibleSectionCount >= 1 ? (
                   <section className="credential-verify-section">
