@@ -128,8 +128,20 @@ const getCredentialDefinitionCount = async () => {
 export const dynamic = 'force-static'
 export const revalidate = 3600
 
+const LANDING_TITLE = 'Skillcraft: Prove your AI coding skills'
+const LANDING_DESCRIPTION = 'Skillcraft works with your favourite AI coding agents to turn your commits into verifiable evidence, so you can earn credentials to prove your AI coding skills.'
+
 export const metadata: Metadata = {
-  title: 'Skillcraft: Turn your work into verifiable AI credentials',
+  title: LANDING_TITLE,
+  description: LANDING_DESCRIPTION,
+  openGraph: {
+    title: LANDING_TITLE,
+    description: LANDING_DESCRIPTION,
+  },
+  twitter: {
+    title: LANDING_TITLE,
+    description: LANDING_DESCRIPTION,
+  },
 }
 
 export default async function HomePage() {
