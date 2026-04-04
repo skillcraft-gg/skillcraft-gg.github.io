@@ -2252,6 +2252,31 @@ h4 {
   min-width: 0;
 }
 
+.issued-credential-image-wrap {
+  position: relative;
+  width: 150px;
+  min-width: 150px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+}
+
+.issued-credential-image-shell {
+  width: 100%;
+}
+
+.issued-credential-image-avatar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #090610;
+  border: 6px solid #090610;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.34);
+}
+
 .issued-credential-title-copy {
   flex: 1 1 280px;
   min-width: 0;
@@ -4203,6 +4228,24 @@ input::placeholder {
     min-width: 0;
     max-width: 100%;
     width: 100%;
+  }
+
+  .issued-credential-image-wrap {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-right: 20px;
+    padding-bottom: 20px;
+  }
+
+  .issued-credential-image-shell {
+    width: 100%;
+  }
+
+  .issued-credential-image-avatar {
+    width: 56px;
+    height: 56px;
+    border-width: 5px;
   }
 
   .detail-summary {

@@ -537,20 +537,22 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
                    flexWrap: 'wrap',
                  }}
                >
-                 <div
-                   className="detail-image-shell"
-                   style={{
-                     width: '150px',
-                     minWidth: '150px',
-                   }}
-                 >
-                   <CredentialImageFallback
-                     src={imageUrl}
-                     alt={`${definition.name} credential image`}
-                     loading="eager"
-                     className="detail-image"
-                   />
-                 </div>
+                  <div className="issued-credential-image-wrap">
+                    <div className="detail-image-shell issued-credential-image-shell">
+                      <CredentialImageFallback
+                        src={imageUrl}
+                        alt={`${definition.name} credential image`}
+                        loading="eager"
+                        className="detail-image"
+                      />
+                    </div>
+                    <img
+                      className="issued-credential-image-avatar"
+                      src={`https://github.com/${profile.github}.png?size=160`}
+                      alt={`${profile.github} avatar`}
+                      loading="lazy"
+                    />
+                  </div>
 
                    <div className="issued-credential-title-copy">
                      <h1>{definition.name}</h1>
