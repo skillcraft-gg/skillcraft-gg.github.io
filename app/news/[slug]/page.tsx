@@ -370,6 +370,29 @@ export default async function NewsPostPage({ params }: { params: NewsPostParams 
   const sidebarPosts = allPosts
     .filter((entry) => entry.slug !== post.slug)
     .slice(0, NEWS_SIDEBAR_LIMIT)
+  const hasMultiplePosts = allPosts.length > 1
+  const authorLine = (
+    <p className="kicker news-post-author-line" style={{ marginBottom: 0 }}>
+      {formatNewsPostDate(post.date)}
+      {authorProfile ? (
+        <>
+          <span aria-hidden="true">·</span>
+          <span>Written by</span>
+          <Link
+            className="tag news-post-author-link"
+            href={`/credentials/profiles/github/${authorProfile.handle}/`}
+            aria-label={`Open profile for ${authorProfile.handle}`}
+          >
+            <span className="news-post-author-prefix">@{authorProfile.handle}</span>
+          </Link>
+        </>
+      ) : (
+        <span>
+          Written by {post.author}
+        </span>
+      )}
+    </p>
+  )
 
   return (
     <>
@@ -389,33 +412,16 @@ export default async function NewsPostPage({ params }: { params: NewsPostParams 
           <section className="section news-post-single-section skill-detail" aria-label={`News post ${post.title}`}>
             <div className="detail-summary-layout">
               <div className="detail-summary-column">
-                <div className="detail-topbar news-post-topbar">
-                  <Link href="/news" className="btn btn-secondary detail-back-link">
-                    ← Back to News
-                  </Link>
+                <div className={`detail-topbar news-post-topbar${hasMultiplePosts ? '' : ' news-post-topbar--meta'}`}>
+                  {hasMultiplePosts ? (
+                    <Link href="/news" className="btn btn-secondary detail-back-link">
+                      ← Back to News
+                    </Link>
+                  ) : authorLine}
                   <NewsPostThemeToggle targetId="news-post-reader" />
                 </div>
 
-                  <p className="kicker news-post-author-line" style={{ marginBottom: 0 }}>
-                    {formatNewsPostDate(post.date)}
-                    {authorProfile ? (
-                      <>
-                        <span aria-hidden="true">·</span>
-                        <span>Written by</span>
-                        <Link
-                          className="tag news-post-author-link"
-                          href={`/credentials/profiles/github/${authorProfile.handle}/`}
-                          aria-label={`Open profile for ${authorProfile.handle}`}
-                        >
-                          <span className="news-post-author-prefix">@{authorProfile.handle}</span>
-                        </Link>
-                      </>
-                    ) : (
-                      <span>
-                        Written by {post.author}
-                      </span>
-                    )}
-                  </p>
+                  {hasMultiplePosts ? authorLine : null}
                 <h1>{buildPostTitle(post.title)}</h1>
                 <p className="workflow-copy news-post-description" style={{ marginTop: 12 }}>{post.description}</p>
 

@@ -2258,7 +2258,15 @@ h4 {
   margin-bottom: 8px;
 }
 
+.news-post-topbar--meta {
+  align-items: flex-start;
+}
+
 .news-post-topbar .detail-back-link {
+  margin-bottom: 0;
+}
+
+.news-post-topbar--meta .news-post-author-line {
   margin-bottom: 0;
 }
 
