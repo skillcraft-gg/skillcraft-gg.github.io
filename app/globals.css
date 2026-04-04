@@ -875,6 +875,83 @@ h4 {
   margin-top: 12px;
 }
 
+.landing-tool-stack {
+  width: var(--cli-section-width);
+  margin-top: 86px;
+  display: grid;
+  gap: 18px;
+}
+
+.landing-tool-stack-title {
+  margin: 0;
+}
+
+.landing-tool-logos {
+  overflow: hidden;
+  color: rgba(241, 236, 236, 0.76);
+}
+
+.landing-tool-logos-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.landing-tool-logos-group {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.landing-tool-logos-group--clone {
+  display: none;
+}
+
+.landing-tool-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 42px;
+  max-width: 160px;
+  opacity: 0.9;
+  transition: opacity 180ms ease, color 180ms ease, filter 180ms ease;
+}
+
+.landing-tool-logo:hover {
+  opacity: 1;
+  color: rgba(255,255,255,0.92);
+  filter: brightness(1.08);
+}
+
+.landing-tool-logo svg {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+}
+
+.landing-tool-logo--opencode {
+  width: 152px;
+  height: 42px;
+}
+
+.landing-tool-logo--openai {
+  width: 155px;
+  height: 42px;
+}
+
+.landing-tool-logo--github {
+  width: 150px;
+  height: 34px;
+}
+
+.landing-tool-logo--git {
+  width: 42px;
+  height: 42px;
+}
+
 .terminal {
   position: relative;
   width: var(--cli-section-width);
@@ -1459,6 +1536,10 @@ h4 {
   .how-it-works {
     width: 100%;
   }
+
+  .landing-tool-stack {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1500,6 +1581,33 @@ h4 {
 
   .how-it-works {
     width: 100%;
+  }
+
+  .landing-tool-stack {
+    width: 100%;
+    margin-top: 59px;
+    gap: 14px;
+  }
+
+  .landing-tool-logos {
+    width: 100%;
+  }
+
+  .landing-tool-logos-track {
+    width: max-content;
+    flex-wrap: nowrap;
+    animation: landing-tool-logos-scroll 44s linear infinite;
+  }
+
+  .landing-tool-logos-group {
+    gap: 22px;
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
+    padding-right: 22px;
+  }
+
+  .landing-tool-logos-group--clone {
+    display: flex;
   }
 
   .whitepaper-promo {
@@ -1580,6 +1688,22 @@ h4 {
 
   .whitepaper-image {
     max-height: 100%;
+  }
+}
+
+@keyframes landing-tool-logos-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-tool-logos-track {
+    animation: none;
   }
 }
 

@@ -65,6 +65,9 @@ export const LandingFooter = () => {
               <a className="landing-footer-link" href="https://skillcraft.gg/docs/reference/cli">CLI</a>
             </li>
             <li>
+              <Link className="landing-footer-link" href="/docs/reference/ai-coding-agents/opencode/">OpenCode Integration</Link>
+            </li>
+            <li>
               <a className="landing-footer-link" href="https://skillcraft.gg/docs/reference/vcs-integrations/github">GitHub Integration</a>
             </li>
           </ul>
@@ -83,7 +86,7 @@ export const LandingFooter = () => {
               <Link className="landing-footer-link" href="/credentials/skillcraft-gg/hello-world">Hello World</Link>
             </li>
             <li>
-              <Link className="landing-footer-link" href="/credentials/skillcraft-gg/opencode-practitioner">Opencode Practitioner</Link>
+              <Link className="landing-footer-link" href="/credentials/skillcraft-gg/opencode-practitioner">OpenCode Practitioner</Link>
             </li>
             <li>
               <a

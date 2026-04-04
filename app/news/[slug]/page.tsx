@@ -500,7 +500,7 @@ export default async function NewsPostPage({ params }: { params: NewsPostParams 
                     </p>
                     <p className="news-post-main-copy">
                       Join the Skillcraft beta and prove your AI coding skills. While in beta, Skillcraft requires a GitHub account and
-                      all claims must come from commits pushed to public GitHub repositories. Opencode is currently supported.
+                      all claims must come from commits pushed to public GitHub repositories. OpenCode is currently supported.
                       We'd love your feedback through the beta and let us know what you think.
                   </p>
                   <div className="skill-install-row skill-install-row--stacked news-post-welcome-actions">

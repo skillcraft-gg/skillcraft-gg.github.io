@@ -658,7 +658,7 @@ export default async function IssuedCredentialDetailPage({ params }: { params: I
               <div className="detail-action-row">
                 <div className="skill-install-card">
                   <p className="label">This credential was issued by Skillcraft</p>
-                  <p className="caption">Skillcraft works with your favourite AI coding agents like Opencode to turn git commits from real projects into verifiable evidence.</p>
+                  <p className="caption">Skillcraft works with your favourite AI coding agents like OpenCode to turn git commits from real projects into verifiable evidence.</p>
                   <div className="skill-install-row skill-install-row--stacked">
                     <VerifyCredentialModal
                       buttonClassName="btn btn-secondary"
