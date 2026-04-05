@@ -1419,6 +1419,17 @@ h4 {
   transform: scale(1);
 }
 
+.landing-footer-pill {
+  position: static;
+  top: auto;
+  right: auto;
+  display: inline-flex;
+  align-items: center;
+  opacity: 1;
+  transform: none;
+  margin-left: 4px;
+}
+
 .landing-footer-link--code {
   align-items: center;
 }

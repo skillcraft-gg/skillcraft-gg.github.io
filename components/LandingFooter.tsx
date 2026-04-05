@@ -46,9 +46,13 @@ export const LandingFooter = () => {
           <ul className="landing-footer-links">
             <li><Link className="landing-footer-link" href="/">Home</Link></li>
             <li><Link className="landing-footer-link" href="/skills">Skills</Link></li>
-            <li><Link className="landing-footer-link" href="/loadouts">Loadouts</Link></li>
             <li><Link className="landing-footer-link" href="/credentials">Credentials</Link></li>
-            <li><Link className="landing-footer-link" href="/news">News</Link></li>
+            <li>
+              <Link className="landing-footer-link" href="/loadouts">
+                Loadouts
+                <span className="top-tab-pill landing-footer-pill">Coming Soon</span>
+              </Link>
+            </li>
           </ul>
         </section>
 
@@ -70,6 +74,12 @@ export const LandingFooter = () => {
             <li>
               <a className="landing-footer-link" href="https://skillcraft.gg/docs/reference/vcs-integrations/github">GitHub Integration</a>
             </li>
+            <li>
+              <Link className="landing-footer-link" href="/docs/changelog/">Changelog</Link>
+            </li>
+            <li>
+              <Link className="landing-footer-link" href="/docs/roadmap/">Roadmap</Link>
+            </li>
           </ul>
         </section>
 
@@ -78,6 +88,9 @@ export const LandingFooter = () => {
           <ul className="landing-footer-links">
             <li>
                <Link className="landing-footer-link" href="/news/introducing-skillcraft-beta">Introducing Skillcraft Beta</Link>
+            </li>
+            <li>
+              <Link className="landing-footer-link" href="/news">News</Link>
             </li>
             <li>
               <a className="landing-footer-link" href="https://skillcraft.gg/whitepaper/skillcraft.pdf">Whitepaper</a>
