@@ -118,7 +118,7 @@ export async function renderIssuedCredentialOpenGraphImage(params: IssuedCredent
 
   const profileImageUrl = `https://github.com/${handle || 'github'}.png?size=500`
   const holderLabel = `@${handle || 'github'}`
-  const caption = `Verify ${credentialName} issued to ${holderLabel} at skillcraft.gg`
+  const caption = `Verify this credential issued to ${holderLabel} at skillcraft.gg`
 
   return new ImageResponse(
     (
