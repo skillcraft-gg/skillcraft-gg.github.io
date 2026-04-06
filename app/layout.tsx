@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     siteName: 'Skillcraft',
     title: 'Skillcraft: Turn your work into verifiable AI credentials',
     description:
-      'Capture what you build, share your progress, and earn verifiable credentials that prove measurable real-world AI engineering work.',
+      'Capture what you build, share your progress, and earn verifiable credentials that prove your AI coding skills.',
     url: 'https://skillcraft.gg',
     images: [
       {
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Skillcraft: Turn your work into verifiable AI credentials',
     description:
-      'Capture what you build, share your progress, and earn verifiable credentials that prove measurable real-world AI engineering work.',
+      'Capture what you build, share your progress, and earn verifiable credentials that prove your AI coding skills.',
     images: ['/images/og-home.jpg'],
   },
   icons: {
