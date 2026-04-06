@@ -48,10 +48,10 @@ export const LandingFooter = () => {
             <li><Link className="landing-footer-link" href="/skills">Skills</Link></li>
             <li><Link className="landing-footer-link" href="/credentials">Credentials</Link></li>
             <li>
-              <Link className="landing-footer-link" href="/loadouts">
+              <span className="landing-footer-link" aria-disabled="true">
                 Loadouts
                 <span className="top-tab-pill landing-footer-pill">Coming Soon</span>
-              </Link>
+              </span>
             </li>
           </ul>
         </section>
