@@ -167,7 +167,7 @@ export default async function HomePage() {
             <span className="headline-accent">So how do you prove it?</span>
           </h1>
         <p className="lede">
-          AI has changed software development forever. One developer can now build systems that used to require a team. Skillcraft works with your favourite AI coding agents like OpenCode to turn git commits from real projects into verifiable evidence, so you can earn credentials that prove your AI coding skills.
+          AI has changed software development forever. One developer can now build systems that used to require a team. Skillcraft works with your favourite AI coding agents like OpenCode and OpenAI Codex to turn git commits from real projects into verifiable evidence, so you can earn credentials that prove your AI coding skills.
         </p>
       <div className="cta-row">
         <Link className="btn btn-primary btn-flat" href="#get-started">Get Started</Link>

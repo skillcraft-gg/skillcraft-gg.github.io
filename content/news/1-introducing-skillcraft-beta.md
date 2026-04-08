@@ -19,7 +19,7 @@ AI has changed software development forever. One developer can now build systems
 
 What matters now is how someone works with their tools: how they break down problems, guide an agent, decide what is correct, and recover when it isn't. Those patterns show up over time in real projects, not in a single artifact or an artificial test.
 
-Skillcraft is built for this new world. It works with your favourite AI coding agents like OpenCode to turn git commits from real projects into verifiable evidence, so developers can earn credentials that prove their AI coding skills.
+Skillcraft is built for this new world. It works with your favourite AI coding agents like OpenCode and OpenAI Codex to turn git commits from real projects into verifiable evidence, so developers can earn credentials that prove their AI coding skills.
 
 Instead of asking people to describe their capabilities, Skillcraft captures evidence from real development. It ties claims to commits, records the workflow context around the work, and verifies the result against explicit requirements. Because the evidence is anchored in git, it stays local, inspectable, and reproducible.
 
