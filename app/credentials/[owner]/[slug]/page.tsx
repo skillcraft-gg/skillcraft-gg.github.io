@@ -17,6 +17,7 @@ import {
   findIssuedProfilesForCredential,
   fetchIssuedCredentialsIndex,
 } from '../../../../lib/issuedCredentialsIndex'
+import { withSocialImageDefaults } from '../../../../lib/metadata'
 
 type CredentialDetailParams = {
   owner: string
@@ -188,7 +189,7 @@ export async function generateMetadata({ params }: { params: CredentialDetailPar
   const credential = findCredentialByPath(credentials, owner, slug)
 
   if (!credential) {
-    return {
+    return withSocialImageDefaults({
       title: 'Credential Not Found | Skillcraft',
       description: 'This credential could not be found.',
       alternates: {
@@ -198,12 +199,12 @@ export async function generateMetadata({ params }: { params: CredentialDetailPar
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const summary = buildMetaDescription(credential)
 
-  return {
+  return withSocialImageDefaults({
     title: `${credential.name} | Skillcraft Credentials`,
     description: summary,
     alternates: {
@@ -229,7 +230,7 @@ export async function generateMetadata({ params }: { params: CredentialDetailPar
       description: summary,
       images: ['/images/og-home.jpg'],
     },
-  }
+  })
 }
 
 export default async function CredentialDetailPage({ params }: { params: CredentialDetailParams }) {

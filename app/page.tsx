@@ -4,6 +4,7 @@ import Link from 'next/link'
 import AppShell from '../components/AppShell'
 import LandingFooter from '../components/LandingFooter'
 import { fetchCredentialIndex } from '../lib/credentialIndex'
+import { withSocialImageDefaults } from '../lib/metadata'
 
 const SKILLS_REGISTRY_INDEX_URL = 'https://skillcraft.gg/skills-registry/search/index.json'
 const SKILL_COUNT_FALLBACK = '__'
@@ -131,7 +132,7 @@ export const revalidate = 3600
 const LANDING_TITLE = 'Skillcraft: Prove your AI coding skills'
 const LANDING_DESCRIPTION = 'Skillcraft works with your favourite AI coding agents to turn your commits into verifiable evidence, so you can earn credentials to prove your AI coding skills.'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocialImageDefaults({
   title: LANDING_TITLE,
   description: LANDING_DESCRIPTION,
   openGraph: {
@@ -142,7 +143,7 @@ export const metadata: Metadata = {
     title: LANDING_TITLE,
     description: LANDING_DESCRIPTION,
   },
-}
+})
 
 export default async function HomePage() {
   const skillCount = await getSkillRegistryCount()

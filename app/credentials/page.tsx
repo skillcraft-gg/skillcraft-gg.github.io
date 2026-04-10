@@ -4,11 +4,12 @@ import { Suspense } from 'react'
 import AppShell from '../../components/AppShell'
 import CredentialsList from '../../components/credentials/CredentialsList'
 import { collectCredentialOwners, fetchCredentialIndex, sortByUpdatedDesc } from '../../lib/credentialIndex'
+import { withSocialImageDefaults } from '../../lib/metadata'
 
 const PAGE_CANONICAL = 'https://skillcraft.gg/credentials'
 const PINNED_CREDENTIAL_ID = 'skillcraft-gg/hello-world'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocialImageDefaults({
   title: 'Credentials Registry | Skillcraft',
   description:
     'Browse and explore the Skillcraft credential registry by owner and summary. Compare definition requirements, source paths, and discover how to verify capability claims.',
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
       'Browse and explore the Skillcraft credential registry by owner and summary. Compare definition requirements, source paths, and discover how to verify capability claims.',
     images: ['/images/og-home.jpg'],
   },
-}
+})
 
 export default async function CredentialsPage() {
   const credentials = sortByUpdatedDesc(await fetchCredentialIndex()).sort((left, right) => {

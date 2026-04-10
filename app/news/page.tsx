@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
 import { getAllNewsPosts } from '../../lib/newsPosts'
+import { withSocialImageDefaults } from '../../lib/metadata'
 
 const BASE_URL = 'https://skillcraft.gg'
 const PAGE_CANONICAL = `${BASE_URL}/news`
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocialImageDefaults({
   title: 'News | Skillcraft',
   description:
     'Read the latest Skillcraft announcements, guidance, and product updates, focused on verifiable AI development and trust through evidence.',
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
       'Read the latest Skillcraft announcements, guidance, and product updates, focused on verifiable AI development and trust through evidence.',
     images: ['/images/og-home.jpg'],
   },
-}
+})
 
 export default async function NewsIndexPage() {
   const posts = await getAllNewsPosts()

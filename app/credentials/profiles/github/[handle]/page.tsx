@@ -9,6 +9,7 @@ import {
 } from '../../../../../components/credentials/credentialImageResolver'
 import { findIssuedProfile, fetchIssuedCredentialsIndex } from '../../../../../lib/issuedCredentialsIndex'
 import { fetchCredentialIndex, type CredentialDefinition } from '../../../../../lib/credentialIndex'
+import { withSocialImageDefaults } from '../../../../../lib/metadata'
 
 type ProfileParams = {
   handle: string
@@ -195,7 +196,7 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
   const count = profile ? profile.issuedCount : 0
 
   if (!profile) {
-    return {
+    return withSocialImageDefaults({
       title: 'Profile Not Found | Skillcraft',
       description: 'This credential profile could not be found.',
       alternates: {
@@ -205,7 +206,7 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const [latest] = profile.credentials
@@ -237,43 +238,36 @@ export async function generateMetadata({ params }: { params: ProfileParams }) {
      ? getMostRecentCredentialName(definitionMap, latest.definition, latest.definitionOwner, latest.definitionSlug)
      : ''
 
-   return {
-     title: {
-       absolute: title,
-     },
-     description,
+    return withSocialImageDefaults({
+      title: {
+        absolute: title,
+      },
+      description,
      alternates: {
        canonical,
      },
-     openGraph: {
-       type: 'website',
-       url: canonical,
-       title,
-       description,
-       section: 'Credential Profiles',
-      tags: [
-        profile.github,
-        latestCredentialName,
-        latest?.definitionOwner,
-        latest?.definitionSlug,
-      ].filter(Boolean),
-      images: [
-        {
-          url: profileImage.url,
-          ...(profileImage.width ? { width: profileImage.width } : {}),
-          ...(profileImage.height ? { height: profileImage.height } : {}),
+      openGraph: {
+        type: 'website',
+        url: canonical,
+        title,
+        description,
+        images: [
+          {
+            url: profileImage.url,
+            ...(profileImage.width ? { width: profileImage.width } : {}),
+            ...(profileImage.height ? { height: profileImage.height } : {}),
           alt: profileImage.alt,
         },
       ],
      },
-     twitter: {
-       card: 'summary_large_image',
-       title,
-       description,
-       images: [profileImage.url],
-     },
-   }
- }
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [profileImage.url],
+      },
+    })
+  }
 
 const buildCredentialDefinitionMap = (definitions: CredentialDefinition[]) => {
   return definitions.reduce<Record<string, CredentialDefinition>>((accumulator, definition) => {

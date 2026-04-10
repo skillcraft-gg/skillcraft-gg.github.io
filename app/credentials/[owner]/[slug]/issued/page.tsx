@@ -11,6 +11,7 @@ import {
   findIssuedProfilesForCredential,
   fetchIssuedCredentialsIndex,
 } from '../../../../../lib/issuedCredentialsIndex'
+import { withSocialImageDefaults } from '../../../../../lib/metadata'
 
 type CredentialIssuedUsersParams = {
   owner: string
@@ -78,7 +79,7 @@ export async function generateMetadata({ params }: { params: CredentialIssuedUse
   const canonical = `${BASE_URL}${buildCanonical(owner, slug)}`
 
   if (!selected) {
-    return {
+    return withSocialImageDefaults({
       title: 'Issued Credential List Not Found | Skillcraft',
       description: 'This issued credential list could not be found.',
       alternates: {
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }: { params: CredentialIssuedUse
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const issuedProfiles = await safeFetchIssuedProfiles()
@@ -96,7 +97,7 @@ export async function generateMetadata({ params }: { params: CredentialIssuedUse
 
   const description = `${formatIssuedCount(issuedUsers.length)} View the complete issue list for ${selected.name}.`
 
-  return {
+  return withSocialImageDefaults({
     title: `${selected.name} issuers | Skillcraft`,
     description,
     alternates: {
@@ -122,7 +123,7 @@ export async function generateMetadata({ params }: { params: CredentialIssuedUse
       description,
       images: ['/images/og-home.jpg'],
     },
-  }
+  })
 }
 
 export default async function CredentialIssuedUsersPage({ params }: { params: CredentialIssuedUsersParams }) {

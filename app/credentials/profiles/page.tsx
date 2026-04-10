@@ -4,10 +4,11 @@ import Link from 'next/link'
 import AppShell from '../../../components/AppShell'
 import CredentialProfilesList from '../../../components/credentials/CredentialProfilesList'
 import { fetchIssuedCredentialsIndex } from '../../../lib/issuedCredentialsIndex'
+import { withSocialImageDefaults } from '../../../lib/metadata'
 
 const PAGE_CANONICAL = 'https://skillcraft.gg/credentials/profiles'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocialImageDefaults({
   title: 'Credential Profiles | Skillcraft',
   description:
     'Browse verified Skillcraft contributors and discover which credentials each GitHub profile has earned from commit-based verification.',
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
       'Browse verified Skillcraft contributors and discover which credentials each GitHub profile has earned from commit-based verification.',
     images: ['/images/og-home.jpg'],
   },
-}
+})
 
 export default async function CredentialProfilesPage() {
   const profiles = await fetchIssuedCredentialsIndex()

@@ -6,6 +6,7 @@ import AppShell from '../../../../components/AppShell'
 import CopyCommandButton from '../../../../components/skills/CopyCommandButton'
 import SkillDetailSummaryPanel from '../../../../components/skills/SkillDetailSummaryPanel'
 import SkillJsonLd from '../../../../components/seo/SkillJsonLd'
+import { withSocialImageDefaults } from '../../../../lib/metadata'
 import { findSkillByPath, fetchSkillIndex, type SkillRecord } from '../../../../lib/skillIndex'
 import { buildCanonicalSummary, getSkillSeoSummary, getSkillDetailSummary } from '../../../../lib/skillEnrichment'
 
@@ -102,7 +103,7 @@ const getMetadataFromSkill = async (skill: SkillRecord, summary: string): Promis
   const safeSummary = ensureDescriptionLength(normalizedSummary)
   const title = `${skill.name} | Skillcraft Skills`
 
-  return {
+  return withSocialImageDefaults({
     title,
     description: safeSummary,
     alternates: {
@@ -129,7 +130,7 @@ const getMetadataFromSkill = async (skill: SkillRecord, summary: string): Promis
       images: ['/images/og-home.jpg'],
     },
     keywords: [...new Set(skill.tags)],
-  }
+  })
 }
 
 const isDisplayableMetadata = (key: string, value: unknown) => {
@@ -184,7 +185,7 @@ export async function generateMetadata({ params }: { params: SkillDetailParams }
   const skill = findSkillByPath(skills, owner, slug)
 
   if (!skill) {
-    return {
+    return withSocialImageDefaults({
       title: 'Skill Not Found | Skillcraft',
       description: 'This skill could not be found.',
       alternates: {
@@ -194,7 +195,7 @@ export async function generateMetadata({ params }: { params: SkillDetailParams }
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const summary = await getSkillSeoSummary(skill)

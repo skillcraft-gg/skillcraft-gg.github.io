@@ -20,6 +20,7 @@ import {
   type NewsPost,
   normalizeResourceSlug,
 } from '../../../lib/newsPosts'
+import { withSocialImageDefaults } from '../../../lib/metadata'
 
 const NEWS_SIDEBAR_LIMIT = 5
 
@@ -301,7 +302,7 @@ export const generateMetadata = async ({ params }: { params: NewsPostParams }): 
   const post = await getNewsPostBySlug(slug)
 
   if (!post) {
-    return {
+    return withSocialImageDefaults({
       title: 'News Post Not Found | Skillcraft',
       description: 'This post could not be found.',
       alternates: {
@@ -311,7 +312,7 @@ export const generateMetadata = async ({ params }: { params: NewsPostParams }): 
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const description = ensureSeoDescription(
@@ -319,7 +320,7 @@ export const generateMetadata = async ({ params }: { params: NewsPostParams }): 
     `${post.title} discusses how Skillcraft turns AI-assisted development into verifiable evidence through skills and credentials.`,
   )
 
-  return {
+  return withSocialImageDefaults({
     title: `${post.title} | Skillcraft News`,
     description,
     alternates: {
@@ -346,7 +347,7 @@ export const generateMetadata = async ({ params }: { params: NewsPostParams }): 
       images: [post.heroImage || '/images/og-home.jpg'],
     },
     keywords: post.tags,
-  }
+  })
 }
 
 export default async function NewsPostPage({ params }: { params: NewsPostParams }) {

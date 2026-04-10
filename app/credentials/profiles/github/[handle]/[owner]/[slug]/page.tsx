@@ -23,6 +23,7 @@ import {
   fetchIssuedCredentialsIndex,
   type IssuedCredentialSource,
 } from '../../../../../../../lib/issuedCredentialsIndex'
+import { withSocialImageDefaults } from '../../../../../../../lib/metadata'
 
 type IssuedCredentialDetailParams = {
   handle: string
@@ -385,7 +386,7 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
   const canonical = `${BASE_URL}${buildCanonical(handle, owner, slug)}`
 
   if (!profile || !issued) {
-    return {
+    return withSocialImageDefaults({
       title: 'Issued Credential Not Found | Skillcraft',
       description: 'This issued credential record could not be found.',
       alternates: {
@@ -395,7 +396,7 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
         index: false,
         follow: false,
       },
-    }
+    })
   }
 
   const credentialForMeta = definitionFromLedger
@@ -418,7 +419,7 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
   const metaImageUrl = `${canonical}opengraph-image.jpg`
   const publishedTime = normalizeIssuedDateIso(issued.issuedAt)
 
-  return {
+  return withSocialImageDefaults({
     title,
     description: summary,
     alternates: {
@@ -446,18 +447,18 @@ export async function generateMetadata({ params }: { params: IssuedCredentialDet
         handle,
       ].filter(Boolean),
     },
-    twitter: {
-      card: 'summary_large_image',
-      title: socialTitle,
-      description: summary,
-      images: [
+      twitter: {
+        card: 'summary_large_image',
+        title: socialTitle,
+        description: summary,
+        images: [
         {
           url: metaImageUrl,
           alt: metaImage.alt,
         },
       ],
     },
-  }
+  })
 }
 
 export default async function IssuedCredentialDetailPage({ params }: { params: IssuedCredentialDetailParams }) {

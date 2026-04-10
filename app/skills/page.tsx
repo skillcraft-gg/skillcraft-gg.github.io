@@ -4,10 +4,11 @@ import { Suspense } from 'react'
 import AppShell from '../../components/AppShell'
 import SkillsList from '../../components/skills/SkillsList'
 import { collectOwners, collectTags, fetchSkillIndex, sortByUpdatedDesc } from '../../lib/skillIndex'
+import { withSocialImageDefaults } from '../../lib/metadata'
 
 const PAGE_CANONICAL = 'https://skillcraft.gg/skills'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withSocialImageDefaults({
   title: 'Skills Registry | Skillcraft',
   description:
     'Browse the Skillcraft skills registry by owner and tag. Explore reusable AI and engineering skills, compare capabilities, and open the source-backed definitions.',
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
       'Browse the Skillcraft skills registry by owner and tag. Explore reusable AI and engineering skills, compare capabilities, and open the source-backed definitions.',
     images: ['/images/og-home.jpg'],
   },
-}
+})
 
 export default async function SkillsPage() {
   const skills = sortByUpdatedDesc(await fetchSkillIndex())
